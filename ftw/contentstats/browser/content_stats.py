@@ -45,6 +45,10 @@ class ChartJSBuilder(object):
             chart.focus(event.currentTarget.dataset.id)
     });
 
+    $("#content-stats-type-counts tr")
+        .on("mouseout", (event) => {
+            chart.focus();
+    });
 
     $("#content-stats-type-counts tr")
         .each(function( index ) {
