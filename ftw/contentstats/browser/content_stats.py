@@ -44,6 +44,14 @@ class ChartJSBuilder(object):
         .on("mouseover", (event) => {
             chart.focus(event.currentTarget.dataset.id)
     });
+
+
+    $("#content-stats-type-counts tr")
+        .each(function( index ) {
+            var data_id = this.dataset.id;
+            d3.select(this).selectAll('td .legend-color')
+                .style('background-color', chart.color(data_id)
+    )});
     """
 
     def __init__(self, data):

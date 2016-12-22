@@ -1,3 +1,10 @@
 #plone-document-byline {
     display: none;
 }
+
+span.legend-color {
+    display: block;
+    width: 1em;
+    height: 1em;
+    margin-right: 2px;
+}
