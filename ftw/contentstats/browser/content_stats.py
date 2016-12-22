@@ -56,6 +56,8 @@ class ChartJSBuilder(object):
             d3.select(this).selectAll('td .legend-color')
                 .style('background-color', chart.color(data_id)
     )});
+
+    chart.legend.hide;
     """
 
     def __init__(self, data):
