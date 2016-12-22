@@ -29,8 +29,9 @@
             </tr>
         </table>
 
-        <div id="chart"></div>
-        <script type="text/javascript" tal:content="structure view/get_chart_js"></script>
+        <div tal:replace="structure view/get_pie_chart" />
+
+        <div style="clear:both"><!-- --></div>
 
     </metal:content>
 

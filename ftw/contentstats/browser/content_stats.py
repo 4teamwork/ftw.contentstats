@@ -7,10 +7,11 @@ class ContentStats(BrowserView):
     """Displays content statistics.
     """
 
-    def get_chart_js(self):
+    def get_pie_chart(self):
+        prefix = 'pie'
         data = self.get_type_counts()
-        js_builder = ChartJSBuilder(data)
-        return js_builder()
+        chart = ChartBuilder(data, prefix)
+        return chart.render()
 
     def get_type_counts(self):
         """Return a list of (portal_type, count) tuples.
@@ -27,14 +28,15 @@ class ContentStats(BrowserView):
         return sorted(counts.items())
 
 
-class ChartJSBuilder(object):
+class ChartBuilder(object):
     """Build the JavaScript required to render a C3 Chart.
     """
 
     JS = """\
     var chart = c3.generate({
+        bindto: '#%(chart_id)s',
         data: {
-            columns: %s,
+            columns: %(columns)s,
             type : 'pie',
             legend: false
         },
@@ -71,9 +73,18 @@ class ChartJSBuilder(object):
     chart.legend.hide();
     """
 
-    def __init__(self, data):
+    MARKUP = """\
+    <div id="%(chart_id)s"></div>
+    <script type="text/javascript">%(js)s</script>
+    """
+
+    def __init__(self, data, prefix):
+        self.prefix = prefix
+        self.chart_id = '%s-chart' % prefix
         self.data = data
 
-    def __call__(self):
+    def render(self):
         data_columns = json.dumps(self.data)
-        return self.JS % data_columns
+        js = self.JS % dict(columns=data_columns, chart_id=self.chart_id)
+        markup = self.MARKUP % dict(chart_id=self.chart_id, js=js)
+        return markup
