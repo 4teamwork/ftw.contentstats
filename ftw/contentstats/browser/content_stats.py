@@ -41,6 +41,13 @@ class ChartJSBuilder(object):
         size: {
             height: 360,
             width: 480
+        },
+        pie: {
+            label: {
+                format: function (value, ratio, id) {
+                    return value;
+                }
+            }
         }
     });
 
