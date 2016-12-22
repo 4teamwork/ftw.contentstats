@@ -38,3 +38,8 @@ class TestContentStatsView(FunctionalTestCase):
         browser.login().open(self.portal, view='@@content-stats')
         table = browser.css('#content-stats-type-counts').first
         self.assertEqual([['Document', '2'], ['Folder', '1']], table.lists())
+
+    @browsing
+    def test_editable_border_disabled(self, browser):
+        browser.login().open(self.portal, view='@@content-stats')
+        self.assertEqual(0, len(browser.css('#content-views')))

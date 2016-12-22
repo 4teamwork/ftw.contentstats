@@ -4,6 +4,13 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       metal:use-macro="context/main_template/macros/master">
 
+    <metal:head fill-slot="head_slot">
+        <link href="/++resource++ftw.contentstats/content-stats.css" rel="stylesheet" type="text/css">
+    </metal:head>
+
+    <metal:block fill-slot="top_slot"
+                 tal:define="dummy python:request.set('disable_border',1)" />
+
     <metal:title fill-slot="content-title">
         <h1 class="documentFirstHeading">Content Stats</h1>
     </metal:title>
