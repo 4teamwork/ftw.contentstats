@@ -1,4 +1,5 @@
 from plone import api
+from zope.i18n import translate
 from zope.publisher.browser import BrowserView
 import json
 
@@ -10,8 +11,18 @@ class ContentStats(BrowserView):
     def get_pie_chart(self):
         prefix = 'pie'
         data = self.get_type_counts()
-        chart = ChartBuilder(data, prefix)
+        titles = self.get_type_titles()
+        chart = ChartBuilder(data, titles, prefix)
         return chart.render()
+
+    def get_type_titles(self):
+        portal_types = api.portal.get_tool('portal_types')
+        ftis = portal_types.values()
+        titles = [
+            (fti.id, translate(
+                fti.title, domain=fti.i18n_domain, context=self.request))
+            for fti in ftis]
+        return dict(titles)
 
     def get_type_counts(self):
         """Return a list of (portal_type, count) tuples.
@@ -25,6 +36,7 @@ class ContentStats(BrowserView):
                 counts[str(key)] = len(t)
             else:
                 counts[str(key)] = 1
+
         return sorted(counts.items())
 
 
@@ -37,6 +49,7 @@ class ChartBuilder(object):
         bindto: '#%(chart_id)s',
         data: {
             columns: %(columns)s,
+            names: %(names)s,
             type : 'pie',
             legend: false
         },
@@ -78,13 +91,16 @@ class ChartBuilder(object):
     <script type="text/javascript">%(js)s</script>
     """
 
-    def __init__(self, data, prefix):
+    def __init__(self, data, titles, prefix):
+        self.data = data
+        self.titles = titles
         self.prefix = prefix
         self.chart_id = '%s-chart' % prefix
-        self.data = data
 
     def render(self):
         data_columns = json.dumps(self.data)
-        js = self.JS % dict(columns=data_columns, chart_id=self.chart_id)
+        data_names = json.dumps(self.titles)
+        js = self.JS % dict(
+            columns=data_columns, names=data_names, chart_id=self.chart_id)
         markup = self.MARKUP % dict(chart_id=self.chart_id, js=js)
         return markup

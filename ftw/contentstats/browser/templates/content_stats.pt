@@ -21,10 +21,10 @@
     <metal:content fill-slot="content-core">
         <p>Content Stats for <strong tal:content="context/title" /></p>
 
-        <table id="content-stats-type-counts">
+        <table id="content-stats-type-counts" tal:define="titles view/get_type_titles">
             <tr tal:repeat="type_count view/get_type_counts" tal:attributes="data-id python:type_count[0]" class="portal_type">
                 <td><span class="legend-color"/></td>
-                <td tal:content="python:type_count[0]">portal_type</td>
+                <td tal:content="python:titles[type_count[0]]">portal_type</td>
                 <td tal:content="python:type_count[1]">count</td>
             </tr>
         </table>

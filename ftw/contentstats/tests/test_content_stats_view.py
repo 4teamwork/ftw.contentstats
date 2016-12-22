@@ -32,13 +32,22 @@ class TestContentStatsView(FunctionalTestCase):
         counts = view.get_type_counts()
         self.assertEqual([('Document', 2), ('Folder', 1)], counts)
 
+    def test_type_titles_reported_correctly(self):
+        view = self.portal.restrictedTraverse('@@content-stats')
+        titles = view.get_type_titles()
+        self.assertDictContainsSubset({
+            'Discussion Item': u'Comment',
+            'Document': u'Page',
+            'News Item': u'News Item'},
+            titles)
+
     @browsing
     def test_view_lists_counts_in_table(self, browser):
         self.create_content()
         browser.login().open(self.portal, view='@@content-stats')
         table = browser.css('#content-stats-type-counts').first
         self.assertEqual(
-            [['', 'Document', '2'], ['', 'Folder', '1']],
+            [['', 'Page', '2'], ['', 'Folder', '1']],
             table.lists())
 
     @browsing
