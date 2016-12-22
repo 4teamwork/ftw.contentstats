@@ -7,4 +7,12 @@
         directory="resources"
         />
 
+    <browser:page
+        name="content-stats"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        template="templates/content_stats.pt"
+        class=".content_stats.ContentStats"
+        permission="cmf.ManagePortal"
+        />
+
 </configure>

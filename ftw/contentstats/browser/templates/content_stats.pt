@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master">
+
+    <metal:title fill-slot="content-title">
+        <h1 class="documentFirstHeading">Content Stats</h1>
+    </metal:title>
+
+    <metal:content fill-slot="content-core">
+        <p>Content Stats for <strong tal:content="context/title" /></p>
+        <table id="content-stats-type-counts">
+            <tr tal:repeat="type_count view/get_type_counts">
+                <td tal:content="python:type_count[0]">portal_type</td>
+                <td tal:content="python:type_count[1]">count</td>
+            </tr>
+        </table>
+    </metal:content>
+
+
+</html>
