@@ -8,3 +8,12 @@ span.legend-color {
     height: 1em;
     margin-right: 2px;
 }
+
+#chart {
+    float: left;
+    max-width: 50%
+}
+
+#content-stats-type-counts {
+    float: left;
+}

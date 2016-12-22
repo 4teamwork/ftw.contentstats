@@ -37,6 +37,10 @@ class ChartJSBuilder(object):
             columns: %s,
             type : 'pie',
             legend: false
+        },
+        size: {
+            height: 360,
+            width: 480
         }
     });
 
@@ -57,7 +61,7 @@ class ChartJSBuilder(object):
                 .style('background-color', chart.color(data_id)
     )});
 
-    chart.legend.hide;
+    chart.legend.hide();
     """
 
     def __init__(self, data):
