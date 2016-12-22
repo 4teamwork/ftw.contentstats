@@ -35,8 +35,14 @@ class ChartJSBuilder(object):
     var chart = c3.generate({
         data: {
             columns: %s,
-            type : 'pie'
+            type : 'pie',
+            legend: false
         }
+    });
+
+    $("#content-stats-type-counts tr")
+        .on("mouseover", (event) => {
+            chart.focus(event.currentTarget.dataset.id)
     });
     """
 

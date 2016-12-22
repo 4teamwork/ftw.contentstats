@@ -21,16 +21,15 @@
     <metal:content fill-slot="content-core">
         <p>Content Stats for <strong tal:content="context/title" /></p>
         <table id="content-stats-type-counts">
-            <tr tal:repeat="type_count view/get_type_counts">
+            <tr tal:repeat="type_count view/get_type_counts" tal:attributes="data-id python:type_count[0]" class="portal_type">
                 <td tal:content="python:type_count[0]">portal_type</td>
                 <td tal:content="python:type_count[1]">count</td>
             </tr>
         </table>
 
         <div id="chart"></div>
-        <script type="text/javascript" tal:content="view/get_chart_js"></script>
+        <script type="text/javascript" tal:content="structure view/get_chart_js"></script>
 
     </metal:content>
-
 
 </html>
