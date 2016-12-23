@@ -17,3 +17,7 @@ span.legend-color {
 #content-stats-type-counts {
     float: left;
 }
+
+.c3-target.c3-defocused {
+    opacity: .5 !important
+}

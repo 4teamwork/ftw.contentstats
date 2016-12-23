@@ -5,8 +5,8 @@
       metal:use-macro="context/main_template/macros/master">
 
     <metal:head fill-slot="head_slot">
-        <link href="/++resource++ftw.contentstats/content-stats.css" rel="stylesheet" type="text/css">
         <link href="/++resource++ftw.contentstats/c3.min.css" rel="stylesheet" type="text/css">
+        <link href="/++resource++ftw.contentstats/content-stats.css" rel="stylesheet" type="text/css">
         <script src="/++resource++ftw.contentstats/d3.v3.min.js" charset="utf-8"></script>
         <script src="/++resource++ftw.contentstats/c3.min.js"></script>
     </metal:head>
