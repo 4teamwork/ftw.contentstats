@@ -64,16 +64,49 @@
             pie_chart.legend.hide();
         </script>
 
+        <div style="clear:both"><!-- --></div>
+        <br/><br/>
+
+        <!-- Bar Chart -->
+        <div id="bar-chart"></div>
+        <script type="text/javascript">
+            var bar_chart = c3.generate({
+                bindto: '#bar-chart',
+                data: {
+                    columns: counts,
+                    names: titles,
+                    type : 'bar',
+                    labels: true,
+                    legend: false
+                },
+                tooltip: {
+                    grouped: false // Default true
+                },
+                axis: {
+                    x: {show:false}
+                },
+                grid: {
+                    y: {
+                        show: true
+                    }
+                }
+            });
+            bar_chart.legend.hide();
+
+        </script>
+
 
         <script type="text/javascript">
             $("#content-stats-type-counts tr")
                 .on("mouseover", (event) => {
-                    pie_chart.focus(event.currentTarget.dataset.id)
+                    pie_chart.focus(event.currentTarget.dataset.id);
+                    bar_chart.focus(event.currentTarget.dataset.id)
             });
 
             $("#content-stats-type-counts tr")
                 .on("mouseout", (event) => {
                     pie_chart.focus();
+                    bar_chart.focus()
             });
 
             $("#content-stats-type-counts tr")
@@ -84,7 +117,6 @@
             )});
         </script>
 
-        <div style="clear:both"><!-- --></div>
 
     </metal:content>
 
