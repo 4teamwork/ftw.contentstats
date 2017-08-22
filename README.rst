@@ -27,6 +27,17 @@ Installation
         ftw.contentstats
 
 
+Usage
+=====
+
+Visit the ``@@content-stats`` view on a Plone site (requires the
+``cmf.ManagePortal`` permission by default).
+
+----
+
+.. image:: docs/content-stats-view.png
+
+
 Development
 ===========
 
