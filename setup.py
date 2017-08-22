@@ -54,7 +54,6 @@ setup(
         'Products.GenericSetup',
         'setuptools',
         'zope.i18nmessageid',
-        'python-dateutil',
     ],
 
     tests_require=tests_require,
