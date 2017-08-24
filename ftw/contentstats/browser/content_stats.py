@@ -15,4 +15,6 @@ class ContentStatsView(BrowserView):
         return sorted(self.type_counts.items())
 
     def get_type_counts_json(self):
+        if self.__name__ == 'content-stats.json':
+            self.request.response.setHeader('Content-Type', 'application/json')
         return json.dumps(self.type_counts)

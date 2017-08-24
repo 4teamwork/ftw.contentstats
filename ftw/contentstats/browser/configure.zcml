@@ -7,12 +7,20 @@
         directory="resources"
         />
 
-    <browser:page
-        name="content-stats"
-        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-        template="templates/content_stats.pt"
-        class=".content_stats.ContentStatsView"
-        permission="cmf.ManagePortal"
-        />
 
+    <browser:pages
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".content_stats.ContentStatsView"
+        permission="cmf.ManagePortal">
+
+        <browser:page
+            name="content-stats"
+            template="templates/content_stats.pt"
+            />
+
+        <browser:page
+            attribute="get_type_counts_json"
+            name="content-stats.json" />
+
+    </browser:pages>
 </configure>

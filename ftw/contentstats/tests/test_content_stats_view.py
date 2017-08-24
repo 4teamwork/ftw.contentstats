@@ -43,3 +43,14 @@ class TestContentStatsView(FunctionalTestCase):
         self.assertItemsEqual(
             ContentStats().get_type_counts(),
             json.loads(browser.css('#content-stats-data').first.attrib['data-counts']))
+
+    @browsing
+    def test_json_endpoint(self, browser):
+        self.create_content()
+        browser.login().open(self.portal, view='content-stats.json')
+
+        self.assertEquals('application/json',
+                          browser.headers.get('Content-Type'))
+
+        self.assertDictEqual(ContentStats().get_type_counts(),
+                             browser.json)
