@@ -21,97 +21,114 @@
     <metal:content fill-slot="content-core">
         <p>Content Stats for <strong tal:content="context/title" /></p>
 
-        <div id="content-stats-data"
-             tal:attributes="data-counts view/get_type_counts_json" />
 
-        <script type="text/javascript">
-            var counts = $('#content-stats-data').data('counts')
-            var titles = Object.keys(counts);
-        </script>
+        <div class="statistic-wrapper"
+            tal:repeat="statistic view/get_all_statictics">
 
-        <table id="content-stats-type-counts">
-            <tr tal:repeat="type_count view/get_type_counts_for_table" tal:attributes="data-id python:type_count[0]">
-                <td><span class="legend-color"/></td>
-                <td tal:content="python:type_count[0]">portal_type</td>
-                <td tal:content="python:type_count[1]">count</td>
-            </tr>
-        </table>
+            <tal:statistic tal:define="name python: statistic[0];
+                                       title python: statistic[1]['title'];
+                                       data python: statistic[1]['data'];
+                                       json python: view.jsonify(data);">
 
-        <!-- Pie Chart -->
-        <div id="pie-chart"></div>
-        <script type="text/javascript">
-            var pie_chart = c3.generate({
-                bindto: '#pie-chart',
-                data: {
-                    json: [counts],
-                    type : 'pie',
-                    legend: false,
-                    keys: {'value': titles},
-                },
-                size: {
-                    height: 360,
-                    width: 480
-                },
-                tooltip: {
-                    format: {
-                        value: function (value, ratio, id) {return value}
-                    }
-                }
-            });
-            pie_chart.legend.hide();
-        </script>
+                <div tal:attributes="id string:content-stats-data-${name};
+                                     data-counts json">
 
-        <div style="clear:both"><!-- --></div>
-        <br/><br/>
+                    <h2 tal:content="title" />
 
-        <!-- Bar Chart -->
-        <div id="bar-chart"></div>
-        <script type="text/javascript">
-            var bar_chart = c3.generate({
-                bindto: '#bar-chart',
-                data: {
-                    json: [counts],
-                    type : 'bar',
-                    labels: true,
-                    legend: false,
-                    keys: {'value': titles}
-                },
-                tooltip: {
-                    grouped: false // Default true
-                },
-                axis: {
-                    x: {show:false}
-                },
-                grid: {
-                    y: {
-                        show: true
-                    }
-                }
-            });
-            bar_chart.legend.hide();
+                    <script tal:content="string:var statisticName = '${name}'" />
 
-        </script>
+                    <script type="text/javascript">
+                        var counts = $('#content-stats-data-'+ statisticName + '').data('counts')
+                        var titles = Object.keys(counts);
+                    </script>
 
-        <script type="text/javascript">
-            $("#content-stats-type-counts tr")
-                .on("mouseover", (event) => {
-                    pie_chart.focus(event.currentTarget.dataset.id);
-                    bar_chart.focus(event.currentTarget.dataset.id)
-            });
+                    <table tal:attributes="id string:content-stats-type-counts-${name}">
+                        <tr tal:repeat="type_count python:sorted(data.items())" tal:attributes="data-id python:type_count[0]">
+                        <td><span class="legend-color"/></td>
+                        <td tal:content="python:type_count[0]">portal_type</td>
+                        <td tal:content="python:type_count[1]">count</td>
+                    </tr>
+                </table>
 
-            $("#content-stats-type-counts tr")
-                .on("mouseout", (event) => {
-                    pie_chart.focus();
-                    bar_chart.focus()
-            });
 
-            $("#content-stats-type-counts tr")
-                .each(function( index ) {
-                    var data_id = this.dataset.id;
-                    d3.select(this).selectAll('td .legend-color')
-                        .style('background-color', pie_chart.color(data_id)
-            )});
-        </script>
+                    <!-- Pie Chart -->
+                    <div tal:attributes="id string:pie-chart-${name}"></div>
+                    <script type="text/javascript">
+                        var pie_chart = c3.generate({
+                            bindto: '#pie-chart-' + statisticName,
+                            data: {
+                                json: [counts],
+                                type : 'pie',
+                                legend: false,
+                                keys: {'value': titles},
+                            },
+                            size: {
+                                height: 360,
+                                width: 480
+                            },
+                            tooltip: {
+                                format: {
+                                    value: function (value, ratio, id) {return value}
+                                }
+                            }
+                        });
+                        pie_chart.legend.hide();
+                    </script>
+
+                    <div style="clear:both"><!-- --></div>
+                    <br/><br/>
+
+                    <!-- Bar Chart -->
+                    <div tal:attributes="id string:bar-chart-${name}"></div>
+                    <script type="text/javascript">
+                        var bar_chart = c3.generate({
+                            bindto: '#bar-chart-' + statisticName,
+                            data: {
+                                json: [counts],
+                                type : 'bar',
+                                labels: true,
+                                legend: false,
+                                keys: {'value': titles}
+                            },
+                            tooltip: {
+                                grouped: false // Default true
+                            },
+                            axis: {
+                                x: {show:false}
+                            },
+                            grid: {
+                                y: {
+                                    show: true
+                                }
+                            }
+                        });
+                        bar_chart.legend.hide();
+
+                    </script>
+
+                    <script type="text/javascript">
+                        $("#content-stats-type-counts-" + statisticName + " tr")
+                            .on("mouseover", (event) => {
+                                pie_chart.focus(event.currentTarget.dataset.id);
+                                bar_chart.focus(event.currentTarget.dataset.id)
+                        });
+
+                        $("#content-stats-type-counts-" + statisticName + " tr")
+                            .on("mouseout", (event) => {
+                                pie_chart.focus();
+                                bar_chart.focus()
+                        });
+
+                        $("#content-stats-type-counts-" + statisticName + " tr")
+                            .each(function( index ) {
+                                var data_id = this.dataset.id;
+                                d3.select(this).selectAll('td .legend-color')
+                                    .style('background-color', pie_chart.color(data_id)
+                        )});
+                    </script>
+                </div>
+            </tal:statistic>
+        </div>
     </metal:content>
 
 </html>

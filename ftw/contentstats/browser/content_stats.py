@@ -9,12 +9,15 @@ class ContentStatsView(BrowserView):
 
     def __init__(self, context, request):
         super(ContentStatsView, self).__init__(context, request)
-        self.type_counts = ContentStats().get_type_counts()
-
-    def get_type_counts_for_table(self):
-        return sorted(self.type_counts.items())
+        self.content_stats = ContentStats().statistics()
 
     def get_type_counts_json(self):
         if self.__name__ == 'content-stats.json':
             self.request.response.setHeader('Content-Type', 'application/json')
-        return json.dumps(self.type_counts)
+        return json.dumps(self.content_stats)
+
+    def get_all_statictics(self):
+        return self.content_stats.items()
+
+    def jsonify(self, data):
+        return json.dumps(data)
