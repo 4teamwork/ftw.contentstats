@@ -1,8 +1,10 @@
 from ftw.builder import Builder
 from ftw.builder import create
+from ftw.contentstats.interfaces import IStatsCollector
 from ftw.contentstats.stats import ContentStats
 from ftw.contentstats.tests import FunctionalTestCase
 from unittest import TestCase
+from zope.interface.verify import verifyClass
 
 
 class TestContentStatsNoPlone(TestCase):
@@ -25,19 +27,21 @@ class TestContentStats(FunctionalTestCase):
         create(Builder('page'))
         create(Builder('page'))
 
-    def test_type_counts_empty(self):
-        counts = self.stats.get_type_counts()
-        self.assertEqual({}, counts)
+    def test_all_registered_collectors_respects_the_contract(self):
+        for name_, collector in self.stats._all_adapters():
+            verifyClass(IStatsCollector, collector.__class__)
 
-    def test_type_counts_reported_correctly(self):
+    def test_get_all_collector_names(self):
+        self.assertEquals(['portal_types'],
+                          self.stats.get_collector_names())
+
+    def test_statistic_contains_portal_types_statistic(self):
         self.create_content()
-        counts = self.stats.get_type_counts()
-        self.assertEqual({u'Folder': 1, u'Page': 2}, counts)
 
-    def test_type_titles_reported_correctly(self):
-        titles = self.stats.get_type_title_mapping
-        self.assertDictContainsSubset({
-            'Discussion Item': u'Comment',
-            'Document': u'Page',
-            'News Item': u'News Item'},
-            titles)
+        self.assertIn('portal_types', self.stats.statistics())
+        self.assertDictEqual(
+            {u'Folder': 1, u'Page': 2},
+            self.stats.statistics()['portal_types']['data'])
+
+        self.assertEquals(u'Portal type statistic',
+                          self.stats.statistics()['portal_types']['title'])
