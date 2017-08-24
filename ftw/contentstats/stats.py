@@ -32,7 +32,7 @@ class ContentStats(object):
         return dict(titles)
 
     def get_type_counts(self):
-        """Return a list of (portal_type title, count) tuples.
+        """Return a list of dicts (keys: name, amount).
         """
         counts = {}
         catalog = api.portal.get_tool('portal_catalog')
@@ -44,5 +44,4 @@ class ContentStats(object):
                 counts[title] = len(t)
             else:
                 counts[title] = 1
-
-        return sorted(counts.items())
+        return counts

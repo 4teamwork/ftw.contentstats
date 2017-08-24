@@ -27,12 +27,12 @@ class TestContentStats(FunctionalTestCase):
 
     def test_type_counts_empty(self):
         counts = self.stats.get_type_counts()
-        self.assertEqual([], counts)
+        self.assertEqual({}, counts)
 
     def test_type_counts_reported_correctly(self):
         self.create_content()
         counts = self.stats.get_type_counts()
-        self.assertEqual([(u'Folder', 1), (u'Page', 2)], counts)
+        self.assertEqual({u'Folder': 1, u'Page': 2}, counts)
 
     def test_type_titles_reported_correctly(self):
         titles = self.stats.get_type_title_mapping

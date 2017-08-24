@@ -26,10 +26,11 @@
 
         <script type="text/javascript">
             var counts = $('#content-stats-data').data('counts')
+            var titles = Object.keys(counts);
         </script>
 
         <table id="content-stats-type-counts">
-            <tr tal:repeat="type_count view/get_type_counts" tal:attributes="data-id python:type_count[0]">
+            <tr tal:repeat="type_count view/get_type_counts_for_table" tal:attributes="data-id python:type_count[0]">
                 <td><span class="legend-color"/></td>
                 <td tal:content="python:type_count[0]">portal_type</td>
                 <td tal:content="python:type_count[1]">count</td>
@@ -42,14 +43,16 @@
             var pie_chart = c3.generate({
                 bindto: '#pie-chart',
                 data: {
-                    columns: counts,
+                    json: [counts],
                     type : 'pie',
-                    legend: false
+                    legend: false,
+                    keys: {'value': titles},
                 },
                 size: {
                     height: 360,
                     width: 480
                 },
+                legend: {'position': 'right'},
                 tooltip: {
                     format: {
                         value: function (value, ratio, id) {return value}
@@ -68,10 +71,11 @@
             var bar_chart = c3.generate({
                 bindto: '#bar-chart',
                 data: {
-                    columns: counts,
+                    json: [counts],
                     type : 'bar',
                     labels: true,
-                    legend: false
+                    legend: false,
+                    keys: {'value': titles}
                 },
                 tooltip: {
                     grouped: false // Default true
@@ -88,7 +92,6 @@
             bar_chart.legend.hide();
 
         </script>
-
 
         <script type="text/javascript">
             $("#content-stats-type-counts tr")
@@ -110,8 +113,6 @@
                         .style('background-color', pie_chart.color(data_id)
             )});
         </script>
-
-
     </metal:content>
 
 </html>
