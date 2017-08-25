@@ -1,6 +1,6 @@
-from plone import api
+from ftw.contentstats.interfaces import IStatsCollector
+from zope.component import getAdapters
 from zope.component.hooks import getSite
-from zope.i18n import translate
 
 
 class ContentStats(object):
@@ -19,30 +19,18 @@ class ContentStats(object):
         """
         return getSite()
 
-    @property
-    def get_type_title_mapping(self):
-        """Return a id, title mapping of all portal types
-        """
-        portal_types = api.portal.get_tool('portal_types')
-        ftis = portal_types.values()
-        titles = [
-            (fti.id, translate(
-                fti.title, domain=fti.i18n_domain, context=self.plone.REQUEST))
-            for fti in ftis]
-        return dict(titles)
+    def _all_adapters(self):
 
-    def get_type_counts(self):
-        """Return a list of (portal_type title, count) tuples.
-        """
-        counts = {}
-        catalog = api.portal.get_tool('portal_catalog')
-        index = catalog._catalog.indexes['portal_type']
-        for key in index.uniqueValues():
-            t = index._index.get(key)
-            title = self.get_type_title_mapping[str(key)]
-            if not isinstance(t, int):
-                counts[title] = len(t)
-            else:
-                counts[title] = 1
+        return getAdapters((self.plone, self.plone.REQUEST),
+                           IStatsCollector)
 
-        return sorted(counts.items())
+    def get_collector_names(self):
+        return [name for name, adapter_ in self._all_adapters()]
+
+    def statistics(self):
+        stats = {}
+        for name, collector in self._all_adapters():
+            stats[name] = dict(title=collector.title(),
+                               data=collector.get_statistic())
+
+        return stats

@@ -5,6 +5,8 @@ Changelog
 1.0.0 (unreleased)
 --------------------
 
+- Introduce IStatsCollector component and implement portal_types collector. [mathias.leimgruber]
+
 - Rework ContenStats integration. Move "getting the content stats" from the view
   to it's own module/class.
   [mathias.leimgruber]
