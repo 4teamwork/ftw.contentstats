@@ -5,5 +5,9 @@ Changelog
 1.0.0 (unreleased)
 --------------------
 
+- Rework ContenStats integration. Move "getting the content stats" from the view
+  to it's own module/class.
+  [mathias.leimgruber]
+
 - Initial implementation.
   [lgraf]

@@ -22,18 +22,16 @@
         <p>Content Stats for <strong tal:content="context/title" /></p>
 
         <div id="content-stats-data"
-             tal:attributes="data-titles view/get_type_titles_json;
-                             data-counts view/get_type_counts_json" />
+             tal:attributes="data-counts view/get_type_counts_json" />
 
         <script type="text/javascript">
-            var titles = $('#content-stats-data').data('titles')
             var counts = $('#content-stats-data').data('counts')
         </script>
 
-        <table id="content-stats-type-counts" tal:define="titles view/get_type_titles">
+        <table id="content-stats-type-counts">
             <tr tal:repeat="type_count view/get_type_counts" tal:attributes="data-id python:type_count[0]">
                 <td><span class="legend-color"/></td>
-                <td tal:content="python:titles[type_count[0]]">portal_type</td>
+                <td tal:content="python:type_count[0]">portal_type</td>
                 <td tal:content="python:type_count[1]">count</td>
             </tr>
         </table>
@@ -45,7 +43,6 @@
                 bindto: '#pie-chart',
                 data: {
                     columns: counts,
-                    names: titles,
                     type : 'pie',
                     legend: false
                 },
@@ -72,7 +69,6 @@
                 bindto: '#bar-chart',
                 data: {
                     columns: counts,
-                    names: titles,
                     type : 'bar',
                     labels: true,
                     legend: false
