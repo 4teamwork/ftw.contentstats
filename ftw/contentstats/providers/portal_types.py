@@ -1,4 +1,4 @@
-from ftw.contentstats.interfaces import IStatsCollector
+from ftw.contentstats.interfaces import IStatsProvider
 from plone import api
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from zope.component import adapter
@@ -7,9 +7,9 @@ from zope.interface import implementer
 from zope.interface import Interface
 
 
-@implementer(IStatsCollector)
+@implementer(IStatsProvider)
 @adapter(IPloneSiteRoot, Interface)
-class PortalTypesCollector(object):
+class PortalTypesProvider(object):
 
     def __init__(self, context, request):
         self.context = context

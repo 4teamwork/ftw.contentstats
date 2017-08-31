@@ -1,10 +1,10 @@
-from ftw.contentstats.interfaces import IStatsCollector
+from ftw.contentstats.interfaces import IStatsProvider
 from zope.component import getAdapters
 from zope.component.hooks import getSite
 
 
 class ContentStats(object):
-    """Gather content statistic from the Plone site.
+    """Gather content statistics from the Plone site.
     """
 
     def __init__(self):
@@ -19,46 +19,46 @@ class ContentStats(object):
         """
         return getSite()
 
-    def _all_adapters(self):
+    def _get_providers(self):
 
         return getAdapters((self.plone, self.plone.REQUEST),
-                           IStatsCollector)
+                           IStatsProvider)
 
-    def get_collector_names(self):
-        """Get names of all registered collectors.
+    def get_provider_names(self):
+        """Get names of all registered stats providers.
         """
-        return [name for name, adapter_ in self._all_adapters()]
+        return [name for name, adapter_ in self._get_providers()]
 
     def get_raw_stats(self):
-        """Get a dictionary with raw stats from all registered collectors.
+        """Get a dictionary with raw stats from all registered providers.
 
         This is the main API for accessing the machine readable representation
         of the collected stats.
         """
         stats = {}
-        for name, collector in self._all_adapters():
-            stats[name] = collector.get_raw_stats()
+        for name, provider in self._get_providers():
+            stats[name] = provider.get_raw_stats()
         return stats
 
     def get_stats_titles(self):
-        """Get a name:title mapping for titles of all collectors.
+        """Get a name:title mapping for titles of all providers.
         """
         titles = {}
-        for name, collector in self._all_adapters():
-            titles[name] = collector.title()
+        for name, provider in self._get_providers():
+            titles[name] = provider.title()
         return titles
 
     def get_stats_display_names(self):
         """Get a name:display_names mapping with display_names dicts of
-        all collectors.
+        all providers.
 
-        If a collector returns None for its display_names mapping, this
+        If a provider returns None for its display_names mapping, this
         method substitutes it with an empty dict for easy processing below.
         """
         display_names = {}
-        for name, collector in self._all_adapters():
+        for name, provider in self._get_providers():
             display_names[name] = {}
-            names = collector.get_display_names()
+            names = provider.get_display_names()
             if names:
                 display_names[name] = names
         return display_names
@@ -75,7 +75,7 @@ class ContentStats(object):
         display_names = self.get_stats_display_names()
 
         human_readable_stats = {}
-        for stat_name in self.get_collector_names():
+        for stat_name in self.get_provider_names():
             stat_dict = {}
             stat_dict['title'] = titles[stat_name]
             stat_dict['data'] = {}

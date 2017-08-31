@@ -1,6 +1,6 @@
 from ftw.builder import Builder
 from ftw.builder import create
-from ftw.contentstats.interfaces import IStatsCollector
+from ftw.contentstats.interfaces import IStatsProvider
 from ftw.contentstats.stats import ContentStats
 from ftw.contentstats.tests import FunctionalTestCase
 from unittest import TestCase
@@ -30,15 +30,15 @@ class TestContentStats(FunctionalTestCase):
         create(Builder('page')
                .in_state('published'))
 
-    def test_all_registered_collectors_respects_the_contract(self):
-        for name_, collector in self.stats_util._all_adapters():
-            verifyClass(IStatsCollector, collector.__class__)
+    def test_all_registered_providers_respect_the_contract(self):
+        for name_, provider in self.stats_util._get_providers():
+            verifyClass(IStatsProvider, provider.__class__)
 
-    def test_get_all_collector_names(self):
+    def test_get_all_provider_names(self):
         self.assertEquals(['portal_types', 'review_states'],
-                          self.stats_util.get_collector_names())
+                          self.stats_util.get_provider_names())
 
-    def test_statistic_contains_portal_types_statistics(self):
+    def test_stats_contain_portal_types_stats(self):
         self.create_content()
         stats = self.stats_util.get_human_readable_stats()
 
@@ -50,7 +50,7 @@ class TestContentStats(FunctionalTestCase):
         self.assertEquals(u'Portal type statistics',
                           stats['portal_types']['title'])
 
-    def test_statistic_contains_review_state_statistics(self):
+    def test_stats_contain_review_state_stats(self):
         self.create_content()
 
         stats = self.stats_util.get_human_readable_stats()
