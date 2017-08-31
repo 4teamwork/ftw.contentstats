@@ -9,7 +9,7 @@ from zope.interface import Interface
 
 @implementer(IStatsCollector)
 @adapter(IPloneSiteRoot, Interface)
-class PortalTypes(object):
+class PortalTypesCollector(object):
 
     def __init__(self, context, request):
         self.context = context
@@ -18,7 +18,7 @@ class PortalTypes(object):
     def title(self):
         """Human readable title
         """
-        return u'Portal type statistic'
+        return u'Portal type statistics'
 
     @property
     def get_type_title_mapping(self):

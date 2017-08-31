@@ -35,7 +35,7 @@ class TestContentStats(FunctionalTestCase):
         self.assertEquals(['portal_types'],
                           self.stats.get_collector_names())
 
-    def test_statistic_contains_portal_types_statistic(self):
+    def test_statistic_contains_portal_types_statistics(self):
         self.create_content()
 
         self.assertIn('portal_types', self.stats.statistics())
@@ -43,5 +43,5 @@ class TestContentStats(FunctionalTestCase):
             {u'Folder': 1, u'Page': 2},
             self.stats.statistics()['portal_types']['data'])
 
-        self.assertEquals(u'Portal type statistic',
+        self.assertEquals(u'Portal type statistics',
                           self.stats.statistics()['portal_types']['title'])

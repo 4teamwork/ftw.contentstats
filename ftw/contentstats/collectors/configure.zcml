@@ -2,6 +2,6 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="ftw.contentstats">
 
-    <adapter factory=".types.PortalTypes" name="portal_types" />
+    <adapter factory=".portal_types.PortalTypesCollector" name="portal_types" />
 
 </configure>
