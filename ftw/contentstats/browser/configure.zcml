@@ -7,20 +7,19 @@
         directory="resources"
         />
 
-
-    <browser:pages
+    <browser:page
+        name="content-stats"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         class=".content_stats.ContentStatsView"
-        permission="cmf.ManagePortal">
+        permission="cmf.ManagePortal"
+        template="templates/content_stats.pt"
+        />
 
-        <browser:page
-            name="content-stats"
-            template="templates/content_stats.pt"
-            />
+    <browser:page
+        name="content-stats-json"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".content_stats.ContentStatsJSONView"
+        permission="cmf.ManagePortal"
+        />
 
-        <browser:page
-            attribute="get_stats_json"
-            name="content-stats.json" />
-
-    </browser:pages>
 </configure>

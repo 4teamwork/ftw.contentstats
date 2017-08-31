@@ -1,4 +1,5 @@
 from ftw.contentstats.testing import CONTENTSTATS_FUNCTIONAL
+from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from unittest2 import TestCase
@@ -15,3 +16,8 @@ class FunctionalTestCase(TestCase):
     def grant(self, *roles):
         setRoles(self.portal, TEST_USER_ID, list(roles))
         transaction.commit()
+
+    def set_workflow_chain(self, for_type, to_workflow):
+        wftool = api.portal.get_tool('portal_workflow')
+        wftool.setChainForPortalTypes((for_type,),
+                                      (to_workflow,))

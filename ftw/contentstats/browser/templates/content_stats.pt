@@ -5,8 +5,8 @@
       metal:use-macro="context/main_template/macros/master">
 
     <metal:head fill-slot="head_slot">
-        <link href="/++resource++ftw.contentstats/c3.min.css" rel="stylesheet" type="text/css">
-        <link href="/++resource++ftw.contentstats/content-stats.css" rel="stylesheet" type="text/css">
+        <link href="/++resource++ftw.contentstats/c3.min.css" rel="stylesheet" type="text/css" />
+        <link href="/++resource++ftw.contentstats/content-stats.css" rel="stylesheet" type="text/css" />
         <script src="/++resource++ftw.contentstats/d3.v3.min.js" charset="utf-8"></script>
         <script src="/++resource++ftw.contentstats/c3.min.js"></script>
         <script src="/++resource++ftw.contentstats/content-stats.js"></script>
@@ -24,20 +24,21 @@
 
 
         <div class="statistic-wrapper"
-            tal:repeat="statistic view/get_all_statictics">
+            tal:repeat="stat view/get_all_stats">
 
-            <tal:statistic tal:define="stat_name python: statistic[0];
-                                       stat_title python: statistic[1]['title'];
-                                       stat_data python: statistic[1]['data'];
-                                       stat_json python: view.jsonify(stat_data);">
+            <tal:statistic tal:define="stat_name python: stat[0];
+                                       stat_title python: stat[1]['title'];
+                                       stat_data python: stat[1]['data'];
+                                       stat_data_url python: stat[1]['data_url'];">
 
                 <div tal:attributes="id string:content-stats-data-${stat_name};
-                                     data-stat-data stat_json;
-                                     data-stat-name stat_name"
+                                     data-stat-name stat_name;
+                                     data-stat-data-url stat_data_url"
                      class="content-stats-infos">
 
                     <h2 tal:content="stat_title" />
 
+                    <!-- HTML table for graceful degradation -->
                     <table class="stats-table" tal:attributes="id string:content-stats-${stat_name}">
                         <tr tal:repeat="stat_item python:sorted(stat_data.items())" tal:attributes="data-id python:stat_item[0]">
                             <td><span class="legend-color"/></td>
