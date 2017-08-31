@@ -38,7 +38,7 @@
 
                     <h2 tal:content="stat_title" />
 
-                    <table tal:attributes="id string:content-stats-${stat_name}">
+                    <table class="stats-table" tal:attributes="id string:content-stats-${stat_name}">
                         <tr tal:repeat="stat_item python:sorted(stat_data.items())" tal:attributes="data-id python:stat_item[0]">
                             <td><span class="legend-color"/></td>
                             <td tal:content="python:stat_item[0]">Document</td>
@@ -48,13 +48,14 @@
 
 
                     <!-- Pie Chart -->
-                    <div tal:attributes="id string:pie-chart-${stat_name}"></div>
+                    <div class="stats-pie-chart" tal:attributes="id string:pie-chart-${stat_name}"></div>
 
                     <div style="clear:both"><!-- --></div>
                     <br/><br/>
 
                     <!-- Bar Chart -->
-                    <div tal:attributes="id string:bar-chart-${stat_name}"></div>
+                    <div class="stats-bar-chart" tal:attributes="id string:bar-chart-${stat_name}"></div>
+                    <hr />
 
                 </div>
             </tal:statistic>

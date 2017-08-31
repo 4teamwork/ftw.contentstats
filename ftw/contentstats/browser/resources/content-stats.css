@@ -9,13 +9,13 @@ span.legend-color {
     margin-right: 2px;
 }
 
-#pie-chart {
+.stats-table {
     float: left;
-    max-width: 50%
 }
 
-#content-stats-type-counts {
+.stats-pie-chart {
     float: left;
+    max-width: 50%
 }
 
 .c3-target.c3-defocused {
