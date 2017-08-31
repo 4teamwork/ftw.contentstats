@@ -20,21 +20,7 @@ class PortalTypesCollector(object):
         """
         return u'Portal type statistics'
 
-    @property
-    def get_type_title_mapping(self):
-        """Return a id, title mapping of all portal types
-        """
-        # TODO: This should be changed to only be used in the C3 visualization,
-        # using data.names - http://c3js.org/reference.html#data-names
-        portal_types = api.portal.get_tool('portal_types')
-        ftis = portal_types.values()
-        titles = [
-            (fti.id, translate(
-                fti.title, domain=fti.i18n_domain, context=self.request))
-            for fti in ftis]
-        return dict(titles)
-
-    def get_statistic(self):
+    def get_raw_stats(self):
         """Return a list of dicts (keys: name, amount).
         """
         counts = {}
@@ -42,9 +28,19 @@ class PortalTypesCollector(object):
         index = catalog._catalog.indexes['portal_type']
         for key in index.uniqueValues():
             t = index._index.get(key)
-            title = self.get_type_title_mapping[str(key)]
             if not isinstance(t, int):
-                counts[title] = len(t)
+                counts[key] = len(t)
             else:
-                counts[title] = 1
+                counts[key] = 1
         return counts
+
+    def get_display_names(self):
+        """Return a id, title mapping of all portal types as display names.
+        """
+        portal_types = api.portal.get_tool('portal_types')
+        ftis = portal_types.values()
+        titles = [
+            (fti.id, translate(
+                fti.title, domain=fti.i18n_domain, context=self.request))
+            for fti in ftis]
+        return dict(titles)

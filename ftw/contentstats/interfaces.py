@@ -12,7 +12,16 @@ class IStatsCollector(Interface):
         """Return a human readable title of the stats collector
         """
 
-    def get_statistic():
-        """Collect stats informations.
-        Return value is a dict with label as key and amount as value.
+    def get_raw_stats():
+        """Collect and return raw stats.
+
+        Return value is a dict with key:value pairs, where key should be a
+        stable, internal ID. If a different display name is desired, a mapping
+        should be provided by implementing get_display_names().
+        """
+
+    def get_display_names():
+        """Return a key: display_name mapping of human readable key names.
+
+        If no alternate display names are needed, this should return None.
         """

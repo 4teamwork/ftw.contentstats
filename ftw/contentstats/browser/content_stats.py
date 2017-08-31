@@ -21,7 +21,7 @@ class ContentStatsView(BrowserView):
         the HTML table for graceful degradation - the actual charts fetch
         their data from the JSON view below.
         """
-        stats = ContentStats().statistics().items()
+        stats = ContentStats().get_human_readable_stats().items()
 
         # Inject respective data URL for each stat
         for stat_name, stats_dict in stats:
@@ -32,14 +32,15 @@ class ContentStatsView(BrowserView):
 class ContentStatsJSONView(BrowserView):
     """Return stats from a particular stats collector as JSON.
 
-    Used to fetch data via data.url from the C3 charts.
+    Used to fetch data via data.url from the C3 charts. This will return the
+    human readable representation of the stats.
     """
 
     def __call__(self):
         self.request.response.setHeader('Content-Type', 'application/json')
 
         stat_name = self.request.form.get('stat')
-        all_stats = ContentStats().statistics()
+        all_stats = ContentStats().get_human_readable_stats()
 
         try:
             stats = all_stats[stat_name]
