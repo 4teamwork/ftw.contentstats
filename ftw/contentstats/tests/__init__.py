@@ -12,6 +12,7 @@ class FunctionalTestCase(TestCase):
     def setUp(self):
         self.portal = self.layer['portal']
         self.request = self.layer['request']
+        self.load_zcml_string = self.layer['load_zcml_string']
 
     def grant(self, *roles):
         setRoles(self.portal, TEST_USER_ID, list(roles))

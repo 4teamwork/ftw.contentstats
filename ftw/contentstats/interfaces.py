@@ -25,3 +25,20 @@ class IStatsProvider(Interface):
 
         If no alternate display names are needed, this should return None.
         """
+
+
+class IStatsKeyFilter(Interface):
+    """Interface for named adapters that allow stats providers to filter their
+    returned stats data by key.
+
+    The adapter name indicates what type of keys it's supposed to be applied
+    to by stats providers, e.g. 'portal_types', 'review_states', ...
+    """
+
+    def __init__(context, request):
+        """Adapts context and request, context is usually a Plone site"""
+
+    def keep(key):
+        """Returns ``True`` if the key in question should be kept, ``False``
+        otherwise.
+        """
