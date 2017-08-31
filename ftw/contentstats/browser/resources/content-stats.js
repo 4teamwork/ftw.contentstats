@@ -1,5 +1,5 @@
 
-function bindeTableHoverEffects(name, chart) {
+function bindTableHoverEffects(name, chart) {
   var selector = '#content-stats-' + name + ' tr';
   $(selector).on('mouseover', function(event) {
     chart.focus(event.currentTarget.dataset.id);
@@ -23,7 +23,7 @@ function createPieChart(name, dataURL) {
         url: dataURL,
         mimeType: 'json',
         type : 'pie',
-        legend: false
+        legend: true
     },
     size: {
         height: 360,
@@ -38,7 +38,7 @@ function createPieChart(name, dataURL) {
 
   // XXX: Buggy since moving to data.url
   // pie_chart.legend.hide();
-  // bindeTableHoverEffects(name, pie_chart);
+  bindTableHoverEffects(name, pie_chart);
 }
 
 function createBarChart(name, dataURL) {
@@ -49,7 +49,7 @@ function createBarChart(name, dataURL) {
         mimeType: 'json',
         type : 'bar',
         labels: true,
-        legend: false
+        legend: true
     },
     tooltip: {
         grouped: false // Default true
@@ -66,7 +66,7 @@ function createBarChart(name, dataURL) {
 
   // XXX: Buggy since moving to data.url
   // bar_chart.legend.hide();
-  // bindeTableHoverEffects(name, bar_chart);
+  bindTableHoverEffects(name, bar_chart);
 }
 
 
