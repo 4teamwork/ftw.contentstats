@@ -80,5 +80,5 @@ class TestContentStatsView(FunctionalTestCase):
                           browser.headers.get('Content-Type'))
 
         self.assertDictEqual(
-            ContentStats().statistics()['portal_types']['data'],
+            ContentStats().get_human_readable_stats()['portal_types']['data'],
             browser.json)

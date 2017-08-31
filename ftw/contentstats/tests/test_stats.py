@@ -20,7 +20,7 @@ class TestContentStats(FunctionalTestCase):
         super(TestContentStats, self).setUp()
         self.grant('Manager')
 
-        self.stats = ContentStats()
+        self.stats_util = ContentStats()
 
     def create_content(self):
         self.set_workflow_chain('Document', 'simple_publication_workflow')
@@ -31,31 +31,33 @@ class TestContentStats(FunctionalTestCase):
                .in_state('published'))
 
     def test_all_registered_collectors_respects_the_contract(self):
-        for name_, collector in self.stats._all_adapters():
+        for name_, collector in self.stats_util._all_adapters():
             verifyClass(IStatsCollector, collector.__class__)
 
     def test_get_all_collector_names(self):
         self.assertEquals(['portal_types', 'review_states'],
-                          self.stats.get_collector_names())
+                          self.stats_util.get_collector_names())
 
     def test_statistic_contains_portal_types_statistics(self):
         self.create_content()
+        stats = self.stats_util.get_human_readable_stats()
 
-        self.assertIn('portal_types', self.stats.statistics())
+        self.assertIn('portal_types', stats)
         self.assertDictEqual(
             {u'Folder': 1, u'Page': 2},
-            self.stats.statistics()['portal_types']['data'])
+            stats['portal_types']['data'])
 
         self.assertEquals(u'Portal type statistics',
-                          self.stats.statistics()['portal_types']['title'])
+                          stats['portal_types']['title'])
 
     def test_statistic_contains_review_state_statistics(self):
         self.create_content()
 
-        self.assertIn('review_states', self.stats.statistics())
+        stats = self.stats_util.get_human_readable_stats()
+        self.assertIn('review_states', stats)
         self.assertDictEqual(
             {'private': 2, 'published': 1},
-            self.stats.statistics()['review_states']['data'])
+            stats['review_states']['data'])
 
         self.assertEquals(u'Review state statistics',
-                          self.stats.statistics()['review_states']['title'])
+                          stats['review_states']['title'])

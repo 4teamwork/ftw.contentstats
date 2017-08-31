@@ -2,6 +2,7 @@ from ftw.contentstats.interfaces import IStatsCollector
 from plone import api
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from zope.component import adapter
+from zope.i18n import translate
 from zope.interface import implementer
 from zope.interface import Interface
 
@@ -19,7 +20,7 @@ class ReviewStatesCollector(object):
         """
         return u'Review state statistics'
 
-    def get_statistic(self):
+    def get_raw_stats(self):
         """Return a list of dicts (keys: name, amount).
         """
         counts = {}
@@ -32,3 +33,16 @@ class ReviewStatesCollector(object):
             else:
                 counts[key] = 1
         return counts
+
+    def get_display_names(self):
+        """Return a id, title mapping of all workflow state titles to use
+        as display names.
+        """
+        catalog = api.portal.get_tool('portal_catalog')
+        index = catalog._catalog.indexes['review_state']
+
+        titles = [
+            (wfstate, translate(
+                wfstate, domain='plone', context=self.request))
+            for wfstate in index.uniqueValues()]
+        return dict(titles)
