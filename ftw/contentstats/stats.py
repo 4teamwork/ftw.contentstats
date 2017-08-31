@@ -4,18 +4,18 @@ from zope.component.hooks import getSite
 
 
 class ContentStats(object):
-    """Gather content statistic from the plone site.plone.
+    """Gather content statistic from the Plone site.
     """
 
     def __init__(self):
-        """ContentStats only works if there is a plone site.
+        """This utility class requires a Plone site.
         """
         if not self.plone:
-            raise Exception('Please setup a plone site')
+            raise Exception('Please setup a Plone site')
 
     @property
     def plone(self):
-        """Get plone site from globals
+        """Get Plone site from globals
         """
         return getSite()
 

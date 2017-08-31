@@ -16,14 +16,14 @@ function bindeTableHoverEffects(name, chart) {
   });
 }
 
-function createPieChart(name, data) {
+function createPieChart(name, dataURL) {
   var pie_chart = c3.generate({
     bindto: '#pie-chart-' + name,
     data: {
-        json: [data],
+        url: dataURL,
+        mimeType: 'json',
         type : 'pie',
-        legend: false,
-        keys: {'value': Object.keys(data)},
+        legend: false
     },
     size: {
         height: 360,
@@ -36,19 +36,20 @@ function createPieChart(name, data) {
     }
   });
 
-  pie_chart.legend.hide();
-  bindeTableHoverEffects(name, pie_chart);
+  // XXX: Buggy since moving to data.url
+  // pie_chart.legend.hide();
+  // bindeTableHoverEffects(name, pie_chart);
 }
 
-function createBarChart(name, data) {
+function createBarChart(name, dataURL) {
   var bar_chart = c3.generate({
     bindto: '#bar-chart-' + name,
     data: {
-        json: [data],
+        url: dataURL,
+        mimeType: 'json',
         type : 'bar',
         labels: true,
-        legend: false,
-        keys: {'value': Object.keys(data)}
+        legend: false
     },
     tooltip: {
         grouped: false // Default true
@@ -63,8 +64,9 @@ function createBarChart(name, data) {
     }
   });
 
-  bar_chart.legend.hide();
-  bindeTableHoverEffects(name, bar_chart);
+  // XXX: Buggy since moving to data.url
+  // bar_chart.legend.hide();
+  // bindeTableHoverEffects(name, bar_chart);
 }
 
 
@@ -73,11 +75,11 @@ $(function() {
   $('.statistic-wrapper').each(function(){
     var wrapper = $(this);
     var infos = wrapper.find('.content-stats-infos');
-    var data = infos.data('stat-data');
+    var dataURL = infos.data('stat-data-url');
     var name = infos.data('stat-name');
 
-    createPieChart(name, data);
-    createBarChart(name, data);
+    createPieChart(name, dataURL);
+    createBarChart(name, dataURL);
   });
 
 });

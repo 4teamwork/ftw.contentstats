@@ -4,7 +4,6 @@ from ftw.contentstats.stats import ContentStats
 from ftw.contentstats.tests import FunctionalTestCase
 from ftw.testbrowser import browsing
 from zExceptions import Unauthorized
-import json
 
 
 class TestContentStatsView(FunctionalTestCase):
@@ -50,21 +49,36 @@ class TestContentStatsView(FunctionalTestCase):
         self.assertEqual(0, len(browser.css('#content-views')))
 
     @browsing
-    def test_data_attribute_with_content_stats(self, browser):
+    def test_data_attribute_with_data_url(self, browser):
         browser.login().open(self.portal, view='@@content-stats')
-        self.assertItemsEqual(
-            ContentStats().statistics()['portal_types']['data'],
-            json.loads(browser.css(
-                '#content-stats-data-portal_types')
-                .first.attrib['data-stat-data']))
+        self.assertEqual(
+            'http://nohost/plone/content-stats-json?stat=portal_types',
+            browser.css('#content-stats-data-portal_types').first.attrib[
+                'data-stat-data-url'])
 
     @browsing
-    def test_json_endpoint(self, browser):
+    def test_json_endpoint_returns_404_for_missing_stat(self, browser):
         self.create_content()
-        browser.login().open(self.portal, view='content-stats.json')
+        browser.login()
+
+        with browser.expect_http_error(code=404):
+            browser.open(self.portal, view='content-stats-json')
 
         self.assertEquals('application/json',
                           browser.headers.get('Content-Type'))
 
-        self.assertDictEqual(ContentStats().statistics(),
-                             browser.json)
+        self.assertDictEqual({}, browser.json)
+
+    @browsing
+    def test_json_endpoint_stats_by_name(self, browser):
+        self.create_content()
+        browser.login()
+
+        browser.open(self.portal, view='content-stats-json?stat=portal_types')
+
+        self.assertEquals('application/json',
+                          browser.headers.get('Content-Type'))
+
+        self.assertDictEqual(
+            ContentStats().statistics()['portal_types']['data'],
+            browser.json)
