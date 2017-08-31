@@ -39,3 +39,9 @@ class TestReviewStatesProvider(FunctionalTestCase):
             'private': u'private',
             'published': u'published'},
             titles)
+
+    def test_respects_review_states_filter(self):
+        self.create_content()
+        self.load_zcml_string('<include package="ftw.contentstats.demo" />')
+        counts = self.provider.get_raw_stats()
+        self.assertEqual({'published': 1}, counts)

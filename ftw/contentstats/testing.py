@@ -7,6 +7,7 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.testing import z2
 from zope.configuration import xmlconfig
+from ftw.testing.layer import COMPONENT_REGISTRY_ISOLATION
 
 
 class ContentStatsLayer(PloneSandboxLayer):
@@ -30,5 +31,6 @@ class ContentStatsLayer(PloneSandboxLayer):
 CONTENTSTATS_FIXTURE = ContentStatsLayer()
 CONTENTSTATS_FUNCTIONAL = FunctionalTesting(
     bases=(CONTENTSTATS_FIXTURE,
+           COMPONENT_REGISTRY_ISOLATION,
            set_builder_session_factory(functional_session_factory)),
     name="ftw.contentstats:functional")

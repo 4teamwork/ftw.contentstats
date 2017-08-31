@@ -36,3 +36,9 @@ class TestPortalTypesProvider(FunctionalTestCase):
             'Document': u'Page',
             'News Item': u'News Item'},
             titles)
+
+    def test_respects_portal_types_filter(self):
+        self.create_content()
+        self.load_zcml_string('<include package="ftw.contentstats.demo" />')
+        counts = self.provider.get_raw_stats()
+        self.assertEqual({u'Document': 2}, counts)
