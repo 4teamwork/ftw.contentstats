@@ -1,6 +1,6 @@
 
 function bindeTableHoverEffects(name, chart) {
-  var selector = '#content-stats-type-counts-' + name + ' tr';
+  var selector = '#content-stats-' + name + ' tr';
   $(selector).on('mouseover', function(event) {
     chart.focus(event.currentTarget.dataset.id);
   });
@@ -73,8 +73,8 @@ $(function() {
   $('.statistic-wrapper').each(function(){
     var wrapper = $(this);
     var infos = wrapper.find('.content-stats-infos');
-    var data = infos.data('counts');
-    var name = infos.data('name');
+    var data = infos.data('stat-data');
+    var name = infos.data('stat-name');
 
     createPieChart(name, data);
     createBarChart(name, data);

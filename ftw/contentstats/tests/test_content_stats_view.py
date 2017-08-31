@@ -27,7 +27,7 @@ class TestContentStatsView(FunctionalTestCase):
     def test_view_lists_counts_in_table(self, browser):
         self.create_content()
         browser.login().open(self.portal, view='@@content-stats')
-        table = browser.css('#content-stats-type-counts-portal_types').first
+        table = browser.css('#content-stats-portal_types').first
         self.assertEqual(
             [['', 'Folder', '1'], ['', 'Page', '2']],
             table.lists())
@@ -43,7 +43,7 @@ class TestContentStatsView(FunctionalTestCase):
         self.assertItemsEqual(
             ContentStats().statistics()['portal_types']['data'],
             json.loads(browser.css(
-                '#content-stats-data-portal_types').first.attrib['data-counts']))
+                '#content-stats-data-portal_types').first.attrib['data-stat-data']))
 
     @browsing
     def test_json_endpoint(self, browser):

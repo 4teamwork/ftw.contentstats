@@ -11,7 +11,7 @@ class ContentStatsView(BrowserView):
         super(ContentStatsView, self).__init__(context, request)
         self.content_stats = ContentStats().statistics()
 
-    def get_type_counts_json(self):
+    def get_stats_json(self):
         if self.__name__ == 'content-stats.json':
             self.request.response.setHeader('Content-Type', 'application/json')
         return json.dumps(self.content_stats)

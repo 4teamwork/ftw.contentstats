@@ -26,35 +26,35 @@
         <div class="statistic-wrapper"
             tal:repeat="statistic view/get_all_statictics">
 
-            <tal:statistic tal:define="name python: statistic[0];
-                                       title python: statistic[1]['title'];
-                                       data python: statistic[1]['data'];
-                                       json python: view.jsonify(data);">
+            <tal:statistic tal:define="stat_name python: statistic[0];
+                                       stat_title python: statistic[1]['title'];
+                                       stat_data python: statistic[1]['data'];
+                                       stat_json python: view.jsonify(stat_data);">
 
-                <div tal:attributes="id string:content-stats-data-${name};
-                                     data-counts json;
-                                     data-name name"
+                <div tal:attributes="id string:content-stats-data-${stat_name};
+                                     data-stat-data stat_json;
+                                     data-stat-name stat_name"
                      class="content-stats-infos">
 
-                    <h2 tal:content="title" />
+                    <h2 tal:content="stat_title" />
 
-                    <table tal:attributes="id string:content-stats-type-counts-${name}">
-                        <tr tal:repeat="type_count python:sorted(data.items())" tal:attributes="data-id python:type_count[0]">
+                    <table tal:attributes="id string:content-stats-${stat_name}">
+                        <tr tal:repeat="stat_item python:sorted(stat_data.items())" tal:attributes="data-id python:stat_item[0]">
                             <td><span class="legend-color"/></td>
-                            <td tal:content="python:type_count[0]">portal_type</td>
-                            <td tal:content="python:type_count[1]">count</td>
+                            <td tal:content="python:stat_item[0]">Document</td>
+                            <td tal:content="python:stat_item[1]">27</td>
                         </tr>
                     </table>
 
 
                     <!-- Pie Chart -->
-                    <div tal:attributes="id string:pie-chart-${name}"></div>
+                    <div tal:attributes="id string:pie-chart-${stat_name}"></div>
 
                     <div style="clear:both"><!-- --></div>
                     <br/><br/>
 
                     <!-- Bar Chart -->
-                    <div tal:attributes="id string:bar-chart-${name}"></div>
+                    <div tal:attributes="id string:bar-chart-${stat_name}"></div>
 
                 </div>
             </tal:statistic>

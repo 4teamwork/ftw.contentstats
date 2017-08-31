@@ -19,7 +19,7 @@
             />
 
         <browser:page
-            attribute="get_type_counts_json"
+            attribute="get_stats_json"
             name="content-stats.json" />
 
     </browser:pages>
