@@ -3,7 +3,6 @@ from ftw.builder import create
 from ftw.contentstats.interfaces import IStatsCollector
 from ftw.contentstats.stats import ContentStats
 from ftw.contentstats.tests import FunctionalTestCase
-from plone import api
 from unittest import TestCase
 from zope.interface.verify import verifyClass
 
@@ -30,11 +29,6 @@ class TestContentStats(FunctionalTestCase):
         create(Builder('page'))
         create(Builder('page')
                .in_state('published'))
-
-    def set_workflow_chain(self, for_type, to_workflow):
-        wftool = api.portal.get_tool('portal_workflow')
-        wftool.setChainForPortalTypes((for_type,),
-                                      (to_workflow,))
 
     def test_all_registered_collectors_respects_the_contract(self):
         for name_, collector in self.stats._all_adapters():

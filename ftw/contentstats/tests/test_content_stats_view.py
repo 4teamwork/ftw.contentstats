@@ -14,9 +14,12 @@ class TestContentStatsView(FunctionalTestCase):
         self.grant('Manager')
 
     def create_content(self):
+        self.set_workflow_chain('Document', 'simple_publication_workflow')
+        self.set_workflow_chain('Folder', 'simple_publication_workflow')
         create(Builder('folder'))
         create(Builder('page'))
-        create(Builder('page'))
+        create(Builder('page')
+               .in_state('published'))
 
     def test_content_stats_view_only_accessible_for_manager(self):
         self.grant('Contributor', 'Editor', 'Reviewer', 'Publisher')
@@ -24,12 +27,21 @@ class TestContentStatsView(FunctionalTestCase):
             self.portal.restrictedTraverse('@@content-stats')
 
     @browsing
-    def test_view_lists_counts_in_table(self, browser):
+    def test_view_lists_type_counts_in_table(self, browser):
         self.create_content()
         browser.login().open(self.portal, view='@@content-stats')
         table = browser.css('#content-stats-portal_types').first
         self.assertEqual(
             [['', 'Folder', '1'], ['', 'Page', '2']],
+            table.lists())
+
+    @browsing
+    def test_view_lists_review_states_in_table(self, browser):
+        self.create_content()
+        browser.login().open(self.portal, view='@@content-stats')
+        table = browser.css('#content-stats-review_states').first
+        self.assertEqual(
+            [['', 'private', '2'], ['', 'published', '1']],
             table.lists())
 
     @browsing
@@ -43,7 +55,8 @@ class TestContentStatsView(FunctionalTestCase):
         self.assertItemsEqual(
             ContentStats().statistics()['portal_types']['data'],
             json.loads(browser.css(
-                '#content-stats-data-portal_types').first.attrib['data-stat-data']))
+                '#content-stats-data-portal_types')
+                .first.attrib['data-stat-data']))
 
     @browsing
     def test_json_endpoint(self, browser):
