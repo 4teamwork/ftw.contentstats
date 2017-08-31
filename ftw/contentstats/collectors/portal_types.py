@@ -24,6 +24,8 @@ class PortalTypesCollector(object):
     def get_type_title_mapping(self):
         """Return a id, title mapping of all portal types
         """
+        # TODO: This should be changed to only be used in the C3 visualization,
+        # using data.names - http://c3js.org/reference.html#data-names
         portal_types = api.portal.get_tool('portal_types')
         ftis = portal_types.values()
         titles = [

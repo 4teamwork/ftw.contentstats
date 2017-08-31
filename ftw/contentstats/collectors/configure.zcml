@@ -3,5 +3,6 @@
     i18n_domain="ftw.contentstats">
 
     <adapter factory=".portal_types.PortalTypesCollector" name="portal_types" />
+    <adapter factory=".review_states.ReviewStatesCollector" name="review_states" />
 
 </configure>
