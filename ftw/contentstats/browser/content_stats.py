@@ -30,7 +30,7 @@ class ContentStatsView(BrowserView):
 
 
 class ContentStatsJSONView(BrowserView):
-    """Return stats from a particular stats collector as JSON.
+    """Return stats from a particular stats provider as JSON.
 
     Used to fetch data via data.url from the C3 charts. This will return the
     human readable representation of the stats.
