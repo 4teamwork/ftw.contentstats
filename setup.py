@@ -12,6 +12,7 @@ tests_require = [
     'unittest2',
     'zope.configuration',
     'freezegun',
+    'requests_toolbelt',
 ]
 
 extras_require = {

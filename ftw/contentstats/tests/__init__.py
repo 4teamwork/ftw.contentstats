@@ -5,6 +5,7 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from unittest2 import TestCase
 import json
+import os
 import transaction
 
 
@@ -30,3 +31,7 @@ class FunctionalTestCase(TestCase):
         with open(log_path) as log:
             entries = map(json.loads, log.readlines())
         return entries
+
+    @property
+    def zserver_port(self):
+        return str(os.environ.get('ZSERVER_PORT', 55001))

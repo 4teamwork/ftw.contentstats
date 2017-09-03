@@ -3,6 +3,7 @@ from ftw.builder.testing import BUILDER_LAYER
 from ftw.builder.testing import functional_session_factory
 from ftw.builder.testing import set_builder_session_factory
 from ftw.contentstats.logger import setup_logger
+from ftw.testbrowser import REQUESTS_BROWSER_FIXTURE
 from ftw.testing.layer import COMPONENT_REGISTRY_ISOLATION
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
@@ -125,8 +126,17 @@ class ContentStatsLayer(PloneSandboxLayer):
 
 
 CONTENTSTATS_FIXTURE = ContentStatsLayer()
+
 CONTENTSTATS_FUNCTIONAL = FunctionalTesting(
     bases=(CONTENTSTATS_FIXTURE,
            COMPONENT_REGISTRY_ISOLATION,
            set_builder_session_factory(functional_session_factory)),
     name="ftw.contentstats:functional")
+
+CONTENTSTATS_FUNCTIONAL_ZSERVER = FunctionalTesting(
+    bases=(z2.ZSERVER_FIXTURE,
+           REQUESTS_BROWSER_FIXTURE,
+           CONTENTSTATS_FIXTURE,
+           COMPONENT_REGISTRY_ISOLATION,
+           set_builder_session_factory(functional_session_factory)),
+    name="ftw.contentstats:functional:zserver")
