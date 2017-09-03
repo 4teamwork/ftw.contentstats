@@ -58,6 +58,8 @@ setup(
         'zope.i18nmessageid',
         'tzlocal',
         'pytz',
+        'requests',
+        'path.py >= 6.2',
     ],
 
     tests_require=tests_require,
@@ -67,5 +69,8 @@ setup(
     # -*- Entry points: -*-
     [z3c.autoinclude.plugin]
     target = plone
+
+    [console_scripts]
+    dump-content-stats = ftw.contentstats.console:dump_stats_cmd
     """,
 )
