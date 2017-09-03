@@ -67,7 +67,8 @@ log will be named ``contentstats-json.log``.
 **Note**: In order to figure out the appropriate log directory,
 ``ftw.contentstats`` needs to derive this information from the eventlog
 location. It's therefore important to have an eventlog configured, otherwise
-``ftw.contentstats`` will prevent instance startup.
+``ftw.contentstats`` will not be able to log any content stats, and complain
+noisily through the root logger.
 
 
 Development
