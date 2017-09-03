@@ -1,8 +1,10 @@
 from ftw.contentstats.testing import CONTENTSTATS_FUNCTIONAL
+from ftw.contentstats.testing import get_log_path
 from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from unittest2 import TestCase
+import json
 import transaction
 
 
@@ -22,3 +24,9 @@ class FunctionalTestCase(TestCase):
         wftool = api.portal.get_tool('portal_workflow')
         wftool.setChainForPortalTypes((for_type,),
                                       (to_workflow,))
+
+    def get_log_entries(self):
+        log_path = get_log_path()
+        with open(log_path) as log:
+            entries = map(json.loads, log.readlines())
+        return entries

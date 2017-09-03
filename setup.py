@@ -11,6 +11,7 @@ tests_require = [
     'transaction',
     'unittest2',
     'zope.configuration',
+    'freezegun',
 ]
 
 extras_require = {
@@ -54,6 +55,8 @@ setup(
         'plone.api',
         'setuptools',
         'zope.i18nmessageid',
+        'tzlocal',
+        'pytz',
     ],
 
     tests_require=tests_require,
