@@ -38,6 +38,34 @@ Visit the ``@@content-stats`` view on a Plone site (requires the
 .. image:: docs/content-stats-view.png
 
 
+Logging content stats over time
+===============================
+
+In order to log content stats to a file, you can use the provided
+``bin/dump-content-stats`` script to have stats dumped to a logfile that
+contains on JSON entry per line, containing the raw stats for that time.
+
+Usage:
+
+``bin/dump-content-stats -s <plone_site_id>``
+
+The script will cause the stats to be dumped by making a request to the
+``@@dump-content-stats`` view. This view is accessible to Anonymous
+(``zope.Public``), but *only* when requested from localhost!
+
+So in order for this script to work, you'll have to invoke it on the same
+machine where your Zope instances run, and make sure the Plone site is **up
+and running**, and reachable from localhost.
+
+The logfile location will be in the same directory as the Z2 log, and the
+log will be named ``contentstats-json.log``.
+
+**Note**: In order to figure out the appropriate log directory,
+``ftw.contentstats`` needs to derive this information from the eventlog
+location. It's therefore important to have an eventlog configured, otherwise
+``ftw.contentstats`` will prevent instance startup.
+
+
 Development
 ===========
 
