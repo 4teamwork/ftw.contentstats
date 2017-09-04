@@ -39,7 +39,7 @@ Visit the ``@@content-stats`` view on a Plone site (requires the
 
 ----
 
-.. image:: docs/content-stats-view.png
+.. image:: https://raw.githubusercontent.com/4teamwork/ftw.contentstats/master/docs/content-stats-view.png
 
 
 Logging content stats over time
