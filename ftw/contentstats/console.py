@@ -1,4 +1,6 @@
 from contextlib import closing
+from os.path import abspath
+from os.path import join
 from path import Path
 import argparse
 import re
@@ -67,8 +69,14 @@ def dump_stats_cmd():
 # resources.
 
 
+def get_buildout_path():
+    # Path to bin/dump-content-stats script
+    script_path = sys.argv[0]
+    return Path(abspath(join(script_path, '..', '..')))
+
+
 def get_zope_url():
-    instance = get_running_instance(Path.getcwd())
+    instance = get_running_instance(get_buildout_path())
     if not instance:
         raise NoRunningInstanceFound()
     return 'http://localhost:{0}/'.format(instance['port'])
