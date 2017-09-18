@@ -42,6 +42,18 @@ Visit the ``@@content-stats`` view on a Plone site (requires the
 .. image:: https://raw.githubusercontent.com/4teamwork/ftw.contentstats/master/docs/content-stats-view.png
 
 
+Collected stats
+===============
+
+Out of the box, ``ftw.contentstats`` will collect statistics for
+
+- **Types** (distinct ``portal_type``'s and their counts)
+- **Workflow states** (distinct ``review_state``'s and their counts)
+
+Add-on packages can have additional statistics collected by providing an
+``IStatsProvider`` adapter (see interface description for details).
+
+
 Logging content stats over time
 ===============================
 
