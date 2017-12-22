@@ -5,6 +5,7 @@ from ftw.builder.testing import set_builder_session_factory
 from ftw.contentstats.logger import setup_logger
 from ftw.testbrowser import REQUESTS_BROWSER_FIXTURE
 from ftw.testing.layer import COMPONENT_REGISTRY_ISOLATION
+from pkg_resources import get_distribution
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PLONE_FIXTURE
@@ -16,6 +17,9 @@ import os
 import pytz
 import tempfile
 import ZConfig
+
+
+IS_PLONE_5_OR_GREATER = get_distribution('Plone').version >= '5'
 
 
 def get_log_path():
@@ -113,6 +117,12 @@ class ContentStatsLayer(PloneSandboxLayer):
 
         z2.installProduct(app, 'ftw.contentstats')
 
+        if not IS_PLONE_5_OR_GREATER:
+            # The tests will fail with a
+            # `ValueError: Index of type DateRecurringIndex not found` unless
+            # the product 'Products.DateRecurringIndex' is installed.
+            z2.installProduct(app, 'Products.DateRecurringIndex')
+
     def tearDownZope(self, app):
         self.remove_eventlog()
 
@@ -123,6 +133,8 @@ class ContentStatsLayer(PloneSandboxLayer):
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'ftw.contentstats:default')
+        if IS_PLONE_5_OR_GREATER:
+            applyProfile(portal, 'plone.app.contenttypes:default')
 
 
 CONTENTSTATS_FIXTURE = ContentStatsLayer()

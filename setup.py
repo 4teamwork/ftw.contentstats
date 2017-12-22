@@ -10,6 +10,7 @@ tests_require = [
     'ftw.testing',
     'plone.app.testing',
     'plone.testing',
+    'plone.app.contenttypes',
     'transaction',
     'unittest2',
     'zope.configuration',
@@ -34,6 +35,7 @@ setup(
     classifiers=[
         'Framework :: Plone',
         'Framework :: Plone :: 4.3',
+        'Framework :: Plone :: 5.1',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
