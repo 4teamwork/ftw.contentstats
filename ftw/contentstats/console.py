@@ -1,8 +1,10 @@
 from contextlib import closing
+from distutils.spawn import find_executable
 from os.path import abspath
 from os.path import join
 from path import Path
 import argparse
+import os
 import re
 import requests
 import socket
@@ -33,9 +35,28 @@ def parse_args():
     return args
 
 
+def renice():
+    """Set CPU and I/O scheduling priorities so that this process
+    (the bin/dump-content-stats script, not the Plone instances) run with
+    lower priority and give way to other processes if required.
+    """
+    os.nice(10)
+    ionice_path = find_executable('ionice')
+
+    if ionice_path is None:
+        print "Unable to find 'ionice' executable, skipping ionicing..."
+        return
+
+    # class 2: Best-effort, prio 7: lowest (in that class)
+    ionice_cmd = '%s -c2 -n7 -p %s' % (ionice_path, os.getpid())
+    os.system(ionice_cmd)
+
+
 def dump_stats_cmd():
     """Will dump content stats to logfile via the @@dump-content-stats view.
     """
+    renice()
+
     args = parse_args()
     zope_url = get_zope_url()
     plone_url = ''.join((zope_url, args.site_id))
