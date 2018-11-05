@@ -1,4 +1,6 @@
 from distutils.spawn import find_executable
+from ftw.contentstats.disk_usage import DiskUsageCalculator
+from ftw.contentstats.utils import get_buildout_path
 from ftw.contentstats.utils import get_zope_url
 import argparse
 import os
@@ -46,9 +48,15 @@ def renice():
 def dump_stats_cmd():
     """Will dump content stats to logfile via the @@dump-content-stats view.
     """
+    args = parse_args()
+
+    # Lower CPU and I/O scheduling priority
     renice()
 
-    args = parse_args()
+    # Calculate disk usage stats and dump them to var/log/disk-usage.json
+    deployment_path = get_buildout_path()
+    DiskUsageCalculator(deployment_path).calc_and_dump()
+
     zope_url = get_zope_url()
     plone_url = ''.join((zope_url, args.site_id))
     dump_stats_url = '/'.join((plone_url, '@@dump-content-stats'))

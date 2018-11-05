@@ -49,6 +49,7 @@ Out of the box, ``ftw.contentstats`` will collect statistics for
 
 - **Types** (distinct ``portal_type``'s and their counts)
 - **Workflow states** (distinct ``review_state``'s and their counts)
+- **Disk Usage** (total disk usage of the deployment directory, filestorage and blobstorage)
 
 Add-on packages can have additional statistics collected by providing an
 ``IStatsProvider`` adapter (see interface description for details).

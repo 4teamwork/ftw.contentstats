@@ -2,13 +2,29 @@ from datetime import timedelta
 from freezegun import freeze_time
 from ftw.builder import Builder
 from ftw.builder import create
+from ftw.contentstats.logger import get_log_dir_path
 from ftw.contentstats.logger import log_stats_to_file
 from ftw.contentstats.testing import PatchedLogTZ
+from ftw.contentstats.tests import assets
 from ftw.contentstats.tests import FunctionalTestCase
 from operator import itemgetter
+from os.path import join
+import os
 
 
 class TestLogging(FunctionalTestCase):
+
+    def setUp(self):
+        super(TestLogging, self).setUp()
+        log_dir = get_log_dir_path()
+        self.disk_usage_path = join(log_dir, 'disk-usage.json')
+
+    def tearDown(self):
+        super(TestLogging, self).tearDown()
+        try:
+            os.unlink(self.disk_usage_path)
+        except OSError:
+            pass
 
     def create_content(self):
         self.set_workflow_chain('Document', 'simple_publication_workflow')
@@ -23,11 +39,14 @@ class TestLogging(FunctionalTestCase):
         self.create_content()
         self.grant('Anonymous')
 
+        with open(self.disk_usage_path, 'w') as disk_usage_file:
+            disk_usage_file.write(assets.load('disk-usage.json'))
+
         log_stats_to_file()
         log_entry = self.get_log_entries()[-1]
 
         self.assertItemsEqual(
-            [u'site', u'timestamp', u'portal_types', u'review_states'],
+            [u'site', u'timestamp', u'disk_usage', u'portal_types', u'review_states'],
             log_entry.keys())
 
         self.assertEquals(
@@ -37,6 +56,12 @@ class TestLogging(FunctionalTestCase):
         self.assertEquals(
             {u'private': 2, u'published': 1},
             log_entry['review_states'])
+
+        self.assertEquals(
+            {u'blobstorage': 45,
+             u'filestorage': 20,
+             u'total': 1024},
+            log_entry['disk_usage'])
 
     def test_log_multiple_entries(self):
         # Frozen time is specified in UTC

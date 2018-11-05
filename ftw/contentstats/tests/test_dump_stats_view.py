@@ -34,12 +34,14 @@ class TestContentStatsView(FunctionalTestCase):
         log_entry = self.get_log_entries()[-1]
 
         self.assertEquals(
-            [u'review_states', u'portal_types', u'site', u'timestamp'],
+            [u'disk_usage', u'review_states', u'portal_types', u'site', u'timestamp'],
             log_entry.keys())
 
         self.assertEquals(
             {u'Folder': 1, u'Document': 2},
             log_entry['portal_types'])
+
+        self.assertEquals({}, log_entry['disk_usage'])
 
     @browsing
     def test_access_from_localhost_allowed_for_anonymous(self, browser):

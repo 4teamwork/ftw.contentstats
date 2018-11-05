@@ -35,7 +35,7 @@ class TestContentStats(FunctionalTestCase):
             verifyClass(IStatsProvider, provider.__class__)
 
     def test_get_all_provider_names(self):
-        self.assertEquals(['portal_types', 'review_states'],
+        self.assertEquals(['portal_types', 'review_states', 'disk_usage'],
                           self.stats_util.get_provider_names())
 
     def test_stats_contain_portal_types_stats(self):
@@ -61,3 +61,10 @@ class TestContentStats(FunctionalTestCase):
 
         self.assertEquals(u'Review state statistics',
                           stats['review_states']['title'])
+
+    def test_stats_contain_disk_usage_stats(self):
+        stats = self.stats_util.get_human_readable_stats()
+        self.assertIn('disk_usage', stats)
+
+        self.assertEquals(u'Disk usage statistics',
+                          stats['disk_usage']['title'])
