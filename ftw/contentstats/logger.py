@@ -33,11 +33,11 @@ def setup_logger():
     return logger
 
 
-def get_logfile_path():
-    """Determine the path for our JSON log.
+def get_log_dir_path():
+    """Determine the path of the deployment's var/log/ directory.
 
     This will be derived from Zope2's EventLog location, in order to not
-    have to figure out the path to var/log/ and the instance name ourselves.
+    have to figure out the path to var/log/ ourselves from buildout.
     """
     zconf = getConfiguration()
     eventlog = getattr(zconf, 'eventlog', None)
@@ -54,6 +54,13 @@ def get_logfile_path():
     handler_factories = eventlog.handler_factories
     eventlog_path = handler_factories[0].section.path
     log_dir = dirname(eventlog_path)
+    return log_dir
+
+
+def get_logfile_path():
+    """Determine the path for our JSON log.
+    """
+    log_dir = get_log_dir_path()
     path = join(log_dir, 'contentstats-json.log')
     return path
 

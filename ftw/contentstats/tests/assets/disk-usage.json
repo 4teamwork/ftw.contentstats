@@ -1,0 +1,13 @@
+{
+    "deployment": "/path/to/deployment",
+    "updated": "2018-12-30T12:45:00",
+    "subtrees": {
+        "bin": 10,
+        "bin/instance": 5,
+        "var/blobstorage": 45,
+        "var/filestorage/Data.fs": 20,
+        "var/filestorage/Data.fs.index": 25,
+        "var/log": 15
+    },
+    "total": 1024
+}

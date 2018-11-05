@@ -4,5 +4,6 @@
 
     <adapter factory=".portal_types.PortalTypesProvider" name="portal_types" />
     <adapter factory=".review_states.ReviewStatesProvider" name="review_states" />
+    <adapter factory=".disk_usage.DiskUsageProvider" name="disk_usage" />
 
 </configure>
