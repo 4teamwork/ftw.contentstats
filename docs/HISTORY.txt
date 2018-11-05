@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.4 (unreleased)
+1.1.0 (2018-11-05)
 ------------------
 
 - Include disk usage (Data.fs and blobstorage) in stats. [lgraf]
