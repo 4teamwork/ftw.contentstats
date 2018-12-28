@@ -15,6 +15,7 @@ from StringIO import StringIO
 from zope.configuration import xmlconfig
 import os
 import pytz
+import shutil
 import tempfile
 import ZConfig
 
@@ -53,26 +54,28 @@ class ContentStatsLayer(PloneSandboxLayer):
 
     def setUp(self):
         # Keep track of temporary files we create
-        self._created_tempfiles = []
+        self.tempdir = None
         super(ContentStatsLayer, self).setUp()
 
     def tearDown(self):
         super(ContentStatsLayer, self).tearDown()
 
         # Clean up all temporary files we created
-        while self._created_tempfiles:
-            os.unlink(self._created_tempfiles.pop())
+        shutil.rmtree(self.tempdir)
 
     def mktemp(self):
         """Create a temporary file to use as the path for the eventlog.
         We don't actually care about the contents of this file, we just need
         it to get a valid writable path to pass to the eventlog config, so
         ftw.contentstats can derive its own logfile path from it.
+
+        We create this in a known tempdir so we can also clean up the
+        contentstats.json file at layer teardown.
         """
-        fd, fn = tempfile.mkstemp(prefix='instance0-', suffix='.log')
-        os.close(fd)
-        self._created_tempfiles.append(fn)
-        return fn
+        self.tempdir = tempfile.mkdtemp()
+        f = open(os.path.join(self.tempdir, 'instance0.log'), 'w')
+        f.close()
+        return f.name
 
     def setup_eventlog(self):
         """Create an eventlog ZConfig configuration and patch it onto the
