@@ -14,7 +14,7 @@ tests_require = [
     'transaction',
     'unittest2',
     'zope.configuration',
-    'freezegun',
+    'freezegun < 0.3.15',
     'requests_toolbelt',
 ]
 
