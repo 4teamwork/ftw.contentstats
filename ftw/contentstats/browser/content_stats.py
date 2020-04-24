@@ -7,6 +7,13 @@ class ContentStatsView(BrowserView):
     """Displays content statistics.
     """
 
+    VISUALIZED_STATS = (
+        'portal_types',
+        'review_states',
+        'checked_out_docs',
+        'file_mimetypes',
+    )
+
     def data_url_for(self, stat_name):
         """Build the data URL for a particular stat.
         """
@@ -14,19 +21,28 @@ class ContentStatsView(BrowserView):
             (self.context.absolute_url(), 'content-stats-json?stat=%s'))
         return base_url % stat_name
 
-    def get_all_stats(self):
+    def get_visualized_stats(self):
         """Used in template to render chart containers for each stat.
 
-        The actual *data* from these stats is onyl used in template to render
+        Limits the returned stats to ones we want to visualize.
+
+        The actual *data* from these stats is only used in template to render
         the HTML table for graceful degradation - the actual charts fetch
         their data from the JSON view below.
         """
-        stats = ContentStats().get_human_readable_stats().items()
+        stats = {}
+        all_stats = ContentStats().get_human_readable_stats()
 
-        # Inject respective data URL for each stat
-        for stat_name, stats_dict in stats:
-            stats_dict['data_url'] = self.data_url_for(stat_name)
-        return stats
+        # Filter out stats not marked for visualization and
+        # inject respective data URL for each stat
+        for name, stats_data in all_stats.items():
+            if name not in self.VISUALIZED_STATS:
+                continue
+
+            stats_data['data_url'] = self.data_url_for(name)
+            stats[name] = stats_data
+
+        return stats.items()
 
 
 class ContentStatsJSONView(BrowserView):
