@@ -54,6 +54,9 @@ Out of the box, ``ftw.contentstats`` will collect statistics for
 Add-on packages can have additional statistics collected by providing an
 ``IStatsProvider`` adapter (see interface description for details).
 
+If ``ftw.monitor`` is installed, its performance metrics will also be
+included, grouped by instance.
+
 
 Logging content stats over time
 ===============================

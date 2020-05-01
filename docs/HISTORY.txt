@@ -2,10 +2,10 @@ Changelog
 =========
 
 
-1.1.2 (unreleased)
+1.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add perf_metrics provider that gathers performance metrics from ftw.monitor. [lgraf]
 
 
 1.1.1 (2018-12-28)

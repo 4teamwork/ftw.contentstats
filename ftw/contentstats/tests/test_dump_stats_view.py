@@ -1,6 +1,7 @@
 from ftw.builder import Builder
 from ftw.builder import create
 from ftw.contentstats.testing import CONTENTSTATS_FUNCTIONAL_ZSERVER
+from ftw.contentstats.testing import FTW_MONITOR_INSTALLED
 from ftw.contentstats.tests import FunctionalTestCase
 from ftw.testbrowser import browsing
 from requests_toolbelt.adapters.source import SourceAddressAdapter
@@ -33,9 +34,17 @@ class TestContentStatsView(FunctionalTestCase):
         browser.open(self.portal, view='@@dump-content-stats', method='POST')
         log_entry = self.get_log_entries()[-1]
 
-        self.assertEquals(
-            [u'disk_usage', u'review_states', u'portal_types', u'site', u'timestamp'],
-            log_entry.keys())
+        expected_stats = [
+            'site',
+            'disk_usage',
+            'portal_types',
+            'review_states',
+            'timestamp',
+        ]
+        if FTW_MONITOR_INSTALLED:
+            expected_stats.append('perf_metrics')
+
+        self.assertItemsEqual(expected_stats, log_entry.keys())
 
         self.assertEquals(
             {u'Folder': 1, u'Document': 2},

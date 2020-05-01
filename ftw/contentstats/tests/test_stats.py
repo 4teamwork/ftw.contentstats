@@ -2,6 +2,7 @@ from ftw.builder import Builder
 from ftw.builder import create
 from ftw.contentstats.interfaces import IStatsProvider
 from ftw.contentstats.stats import ContentStats
+from ftw.contentstats.testing import FTW_MONITOR_INSTALLED
 from ftw.contentstats.tests import FunctionalTestCase
 from unittest import TestCase
 from zope.interface.verify import verifyClass
@@ -35,8 +36,16 @@ class TestContentStats(FunctionalTestCase):
             verifyClass(IStatsProvider, provider.__class__)
 
     def test_get_all_provider_names(self):
-        self.assertEquals(['portal_types', 'review_states', 'disk_usage'],
-                          self.stats_util.get_provider_names())
+        expected_provider_names = [
+            'portal_types',
+            'review_states',
+            'disk_usage',
+        ]
+        if FTW_MONITOR_INSTALLED:
+            expected_provider_names.append('perf_metrics')
+
+        self.assertItemsEqual(expected_provider_names,
+                              self.stats_util.get_provider_names())
 
     def test_stats_contain_portal_types_stats(self):
         self.create_content()

@@ -5,6 +5,7 @@ from ftw.builder.testing import set_builder_session_factory
 from ftw.contentstats.logger import setup_logger
 from ftw.testbrowser import REQUESTS_BROWSER_FIXTURE
 from ftw.testing.layer import COMPONENT_REGISTRY_ISOLATION
+from pkg_resources import DistributionNotFound
 from pkg_resources import get_distribution
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
@@ -21,6 +22,13 @@ import ZConfig
 
 
 IS_PLONE_5_OR_GREATER = get_distribution('Plone').version >= '5'
+
+
+try:
+    get_distribution('ftw.monitor')
+    FTW_MONITOR_INSTALLED = True
+except DistributionNotFound:
+    FTW_MONITOR_INSTALLED = False
 
 
 def get_log_path():
