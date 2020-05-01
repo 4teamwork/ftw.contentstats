@@ -3,7 +3,7 @@ from ftw.contentstats.testing import get_log_path
 from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
-from unittest2 import TestCase
+from unittest import TestCase
 import json
 import os
 import transaction

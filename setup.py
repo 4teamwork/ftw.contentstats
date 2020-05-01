@@ -12,7 +12,6 @@ tests_require = [
     'plone.testing',
     'plone.app.contenttypes',
     'transaction',
-    'unittest2',
     'zope.configuration',
     'freezegun < 0.3.15',
     'requests_toolbelt',
