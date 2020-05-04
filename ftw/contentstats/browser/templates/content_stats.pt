@@ -25,7 +25,7 @@
 
 
         <div class="statistic-wrapper"
-            tal:repeat="stat view/get_all_stats">
+            tal:repeat="stat view/get_visualized_stats">
 
             <tal:statistic tal:define="stat_name python: stat[0];
                                        stat_title python: stat[1]['title'];

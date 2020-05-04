@@ -4,6 +4,7 @@ from ftw.builder import Builder
 from ftw.builder import create
 from ftw.contentstats.logger import get_log_dir_path
 from ftw.contentstats.logger import log_stats_to_file
+from ftw.contentstats.testing import FTW_MONITOR_INSTALLED
 from ftw.contentstats.testing import PatchedLogTZ
 from ftw.contentstats.tests import assets
 from ftw.contentstats.tests import FunctionalTestCase
@@ -45,9 +46,18 @@ class TestLogging(FunctionalTestCase):
         log_stats_to_file()
         log_entry = self.get_log_entries()[-1]
 
-        self.assertItemsEqual(
-            [u'site', u'timestamp', u'disk_usage', u'portal_types', u'review_states'],
-            log_entry.keys())
+        expected_stats_names = [
+            'site',
+            'timestamp',
+            'disk_usage',
+            'portal_types',
+            'review_states',
+        ]
+
+        if FTW_MONITOR_INSTALLED:
+            expected_stats_names.append('perf_metrics')
+
+        self.assertItemsEqual(expected_stats_names, log_entry.keys())
 
         self.assertEquals(
             {u'Folder': 1, u'Document': 2},

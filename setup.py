@@ -2,17 +2,17 @@ from setuptools import find_packages
 from setuptools import setup
 import os
 
-version = '1.1.2.dev0'
+version = '1.2.0.dev0'
 
 tests_require = [
     'ftw.builder',
     'ftw.testbrowser',
     'ftw.testing',
+    'mock',
     'plone.app.testing',
     'plone.testing',
     'plone.app.contenttypes',
     'transaction',
-    'unittest2',
     'zope.configuration',
     'freezegun < 0.3.15',
     'requests_toolbelt',
