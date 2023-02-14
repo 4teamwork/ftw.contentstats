@@ -2,7 +2,7 @@ from setuptools import find_packages
 from setuptools import setup
 import os
 
-version = '1.2.1.dev0'
+version = '1.3.0.dev0'
 
 tests_require = [
     'ftw.builder',
@@ -65,6 +65,7 @@ setup(
         'pytz',
         'requests',
         'path.py >= 6.2',
+        'fluent-logger',
     ],
 
     tests_require=tests_require,

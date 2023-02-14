@@ -1,5 +1,7 @@
 from App.config import getConfiguration
 from datetime import datetime
+from fluent.asynchandler import FluentHandler
+from fluent.handler import FluentRecordFormatter
 from ftw.contentstats.stats import ContentStats
 from logging import FileHandler
 from logging import getLogger
@@ -9,6 +11,7 @@ from tzlocal import get_localzone
 from zope.component.hooks import getSite
 import json
 import logging
+import os
 import pytz
 
 
@@ -19,17 +22,46 @@ LOG_TZ = get_localzone()
 
 
 def setup_logger():
-    """Set up logger that writes to the JSON based logfile.
+    """Set up logger that writes to a JSON logfile or a Fluentd instance.
 
     May be invoked multiple times, and must therefore be idempotent.
     """
     if not logger.handlers:
-        path = get_logfile_path()
-        if path is not None:
-            handler = FileHandler(path)
-            logger.addHandler(handler)
-            logger.setLevel(logging.INFO)
-            logger.propagate = False
+        fluent_host = os.environ.get('FLUENT_HOST')
+        fluent_port = int(os.environ.get('FLUENT_PORT', 24224))
+
+        if fluent_host:
+            setup_fluent_handler(fluent_host, fluent_port)
+        else:
+            setup_jsonfile_handler()
+
+        logger.setLevel(logging.INFO)
+        logger.propagate = False
+
+    return logger
+
+
+def setup_fluent_handler(fluent_host, fluent_port):
+    """Set up handler that writes to a Fluentd / Fluent Bit instance.
+    """
+    tag = 'contentstats-json.log'
+    ns = os.environ.get('KUBERNETES_NAMESPACE')
+    if ns:
+        tag = '-'.join((ns, tag))
+
+    handler = FluentHandler(tag, fluent_host, fluent_port)
+    handler.setFormatter(FluentRecordFormatter())
+    logger.addHandler(handler)
+    return logger
+
+
+def setup_jsonfile_handler():
+    """Set up handler that writes to the JSON based logfile.
+    """
+    path = get_logfile_path()
+    if path is not None:
+        handler = FileHandler(path)
+        logger.addHandler(handler)
     return logger
 
 
