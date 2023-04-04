@@ -5,6 +5,7 @@ from ftw.builder.testing import set_builder_session_factory
 from ftw.contentstats.logger import setup_logger
 from ftw.testbrowser import REQUESTS_BROWSER_FIXTURE
 from ftw.testing.layer import COMPONENT_REGISTRY_ISOLATION
+from logging import FileHandler
 from pkg_resources import DistributionNotFound
 from pkg_resources import get_distribution
 from plone.app.testing import applyProfile
@@ -14,6 +15,7 @@ from plone.app.testing import PloneSandboxLayer
 from plone.testing import z2
 from StringIO import StringIO
 from zope.configuration import xmlconfig
+import logging
 import os
 import pytz
 import shutil
@@ -35,8 +37,15 @@ def get_log_path():
     """Get filesystem path to ftw.contentstats' logfile.
     """
     logger = setup_logger()
-    log_path = logger.handlers[0].stream.name
-    return log_path
+    handler = logger.handlers[0]
+    if isinstance(handler, FileHandler):
+        log_path = handler.stream.name
+        return log_path
+
+
+def clear_log_handlers():
+    logger = logging.getLogger('ftw.contentstats')
+    map(logger.removeHandler, logger.handlers)
 
 
 class PatchedLogTZ(object):
@@ -139,8 +148,10 @@ class ContentStatsLayer(PloneSandboxLayer):
 
     def testTearDown(self):
         # Isolation: truncate ftw.contentstats' logfile after each test
-        with open(get_log_path(), 'w') as f:
-            f.truncate()
+        log_path = get_log_path()
+        if log_path:
+            with open(log_path, 'w') as f:
+                f.truncate()
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'ftw.contentstats:default')

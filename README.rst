@@ -86,6 +86,20 @@ location. It's therefore important to have an eventlog configured, otherwise
 ``ftw.contentstats`` will not be able to log any content stats, and complain
 noisily through the root logger.
 
+Logging to Fluentd
+------------------
+
+Instead of logging to a logfile, ``ftw.contentstats`` can also be configured
+to log to a Fluentd instance.
+
+If the environment variable ``FLUENT_HOST`` is set, it will log to that fluent
+host using the Fluentd Forward Protocol, instead of logging to a local file.
+``FLUENT_PORT`` (optional) allows to specify the port, and defaults to 24224
+if not set.
+
+In order for ftw.contentstats to use a proper tag for events logged to Fluentd,
+the Pod namespace needs to be exposed in the ``KUBERNETES_NAMESPACE`` env var.
+
 
 Development
 ===========

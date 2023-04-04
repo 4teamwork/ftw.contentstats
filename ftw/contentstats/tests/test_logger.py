@@ -1,22 +1,41 @@
+from contextlib import contextmanager
 from datetime import timedelta
+from fluent.asynchandler import FluentHandler
 from freezegun import freeze_time
 from ftw.builder import Builder
 from ftw.builder import create
 from ftw.contentstats.logger import get_log_dir_path
 from ftw.contentstats.logger import log_stats_to_file
+from ftw.contentstats.logger import setup_logger
+from ftw.contentstats.testing import clear_log_handlers
 from ftw.contentstats.testing import FTW_MONITOR_INSTALLED
 from ftw.contentstats.testing import PatchedLogTZ
 from ftw.contentstats.tests import assets
 from ftw.contentstats.tests import FunctionalTestCase
+from logging import FileHandler
+from mock import patch
 from operator import itemgetter
 from os.path import join
+import json
 import os
+
+
+@contextmanager
+def env_var(name, value):
+    assert name not in os.environ, \
+        'Unexpectedly found the variable {} in the environment.'.format(name)
+    os.environ[name] = value
+    try:
+        yield
+    finally:
+        os.environ.pop(name)
 
 
 class TestLogging(FunctionalTestCase):
 
     def setUp(self):
         super(TestLogging, self).setUp()
+        clear_log_handlers()
         log_dir = get_log_dir_path()
         self.disk_usage_path = join(log_dir, 'disk-usage.json')
 
@@ -140,3 +159,80 @@ class TestLogging(FunctionalTestCase):
             log_entry = self.get_log_entries()[-1]
             self.assertEqual(u'2017-10-29T02:30:00.000750+01:00',
                              log_entry['timestamp'])
+
+
+class TestFluentLogging(FunctionalTestCase):
+
+    @patch('fluent.handler.FluentHandler.emit')
+    def test_dispatches_to_fluentd(self, mock_emit):
+        clear_log_handlers()
+
+        with env_var('FLUENT_HOST', 'localhost'):
+            log_stats_to_file()
+
+        self.assertEqual(1, mock_emit.call_count)
+        log_record = mock_emit.call_args[0][0]
+
+        expected_stats_names = [
+            'site',
+            'timestamp',
+            'disk_usage',
+            'portal_types',
+            'review_states',
+        ]
+
+        if FTW_MONITOR_INSTALLED:
+            expected_stats_names.append('perf_metrics')
+
+        self.assertItemsEqual(
+            expected_stats_names,
+            json.loads(log_record.msg).keys())
+
+    @patch('ftw.contentstats.logger.get_logfile_path')
+    def test_sets_up_file_handler_by_default(self, mocked_logpath):
+        mocked_logpath.return_value = '/tmp/logfile'
+        clear_log_handlers()
+
+        logger = setup_logger()
+
+        self.assertEqual(1, len(logger.handlers))
+        handler = logger.handlers[0]
+        self.assertIsInstance(handler, FileHandler)
+        self.assertEqual('/tmp/logfile', handler.stream.name)
+
+    @patch('ftw.contentstats.logger.get_logfile_path')
+    def test_sets_up_fluent_handler_if_envvar_set(self, mocked_logpath):
+        # Mock the presence of a possible log file path in order to test that
+        # even if one could be determined, setup_logger() *doesn't* set up
+        # a FileHandler if FLUENT_HOST is set.
+        mocked_logpath.return_value = '/tmp/logfile'
+
+        clear_log_handlers()
+
+        with env_var('FLUENT_HOST', 'localhost'):
+            logger = setup_logger()
+
+        self.assertEqual(1, len(logger.handlers))
+        handler = logger.handlers[0]
+        self.assertIsInstance(handler, FluentHandler)
+
+    def test_sets_up_tag_including_ns_for_fluent_handler(self):
+        clear_log_handlers()
+
+        with env_var('FLUENT_HOST', 'localhost'):
+            with env_var('KUBERNETES_NAMESPACE', 'demo-example-org'):
+                logger = setup_logger()
+
+        self.assertEqual(1, len(logger.handlers))
+        handler = logger.handlers[0]
+        self.assertEqual('demo-example-org-contentstats-json.log', handler.tag)
+
+    def test_sets_up_fallback_tag_for_fluent_handler(self):
+        clear_log_handlers()
+
+        with env_var('FLUENT_HOST', 'localhost'):
+            logger = setup_logger()
+
+        self.assertEqual(1, len(logger.handlers))
+        handler = logger.handlers[0]
+        self.assertEqual('contentstats-json.log', handler.tag)
