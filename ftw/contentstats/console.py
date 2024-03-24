@@ -28,6 +28,11 @@ def parse_args():
         help='Use Python implementation for disk usage calculation.',
         action='store_true',
     )
+    parser.add_argument(
+        '--data-path', '-d',
+        help='Path to data directory for which to calculate disk usage.',
+        default=None,
+    )
 
     args = parser.parse_args()
     return args
@@ -61,7 +66,10 @@ def dump_stats_cmd():
     # Calculate disk usage stats and dump them to var/log/disk-usage.json
     deployment_path = get_buildout_path()
     DiskUsageCalculator(
-        deployment_path, use_du_util=not args.python_du).calc_and_dump()
+        deployment_path,
+        use_du_util=not args.python_du,
+        data_path=args.data_path,
+    ).calc_and_dump()
 
     zope_url = get_zope_url()
     plone_url = ''.join((zope_url, args.site_id))

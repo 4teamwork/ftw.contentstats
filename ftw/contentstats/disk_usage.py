@@ -25,10 +25,11 @@ class DiskUsageCalculator(object):
 
     du_stats_path = 'var/log/disk-usage.json'
 
-    def __init__(self, deployment_path, use_du_util=True):
+    def __init__(self, deployment_path, use_du_util=True, data_path=None):
         self.deployment_path = deployment_path
         self.du_executable = None
         self.use_du_util = use_du_util
+        self.data_path = data_path or deployment_path
 
         # This facilitates testing without actually running `du`
         self.du_outputs = {}
@@ -105,7 +106,7 @@ class DiskUsageCalculator(object):
         individual subtrees.
         """
         if self.du_executable is None and not self.du_outputs:
-            res = self.disk_usage(path=self.deployment_path)
+            res = self.disk_usage(path=self.data_path)
             disk_usage_total = res['.'][1]
             disk_usage_subtrees = {k: v[0] for k, v in res.items()}
         else:
@@ -133,7 +134,7 @@ class DiskUsageCalculator(object):
         Returns the total size in bytes as an integer.
         """
         if 'total' not in self.du_outputs:
-            du_total_cmd = '%s -s -B1 %s' % (self.du_executable, self.deployment_path)
+            du_total_cmd = '%s -s -B1 %s' % (self.du_executable, self.data_path)
             self.du_outputs['total'] = self.run(du_total_cmd)
 
         disk_usage_total = self.parse_du_output(self.du_outputs['total'])
@@ -155,7 +156,7 @@ class DiskUsageCalculator(object):
         """
         if 'subtrees' not in self.du_outputs:
             du_subtrees_cmd = '%s -x -a -B1 --count-links --apparent-size --max-depth=3 %s' % (
-                self.du_executable, self.deployment_path)
+                self.du_executable, self.data_path)
             self.du_outputs['subtrees'] = self.run(du_subtrees_cmd)
 
         disk_usage_subtrees = self.parse_du_output(self.du_outputs['subtrees'])
@@ -182,8 +183,8 @@ class DiskUsageCalculator(object):
         for line in lines:
             size_in_bytes, path = map(str.strip, line.split())
             size_in_bytes = int(size_in_bytes)
-            assert path.startswith(self.deployment_path)
-            path = path.replace(self.deployment_path, '', 1).lstrip('/')
+            assert path.startswith(self.data_path)
+            path = path.replace(self.data_path, '', 1).lstrip('/')
             disk_usage[path] = size_in_bytes
 
         return disk_usage
