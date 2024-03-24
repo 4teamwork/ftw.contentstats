@@ -23,6 +23,11 @@ def parse_args():
         '--site-id', '-s',
         help='Path to the Plone site.',
         required=True)
+    parser.add_argument(
+        '--python-du',
+        help='Use Python implementation for disk usage calculation.',
+        action='store_true',
+    )
 
     args = parser.parse_args()
     return args
@@ -55,7 +60,8 @@ def dump_stats_cmd():
 
     # Calculate disk usage stats and dump them to var/log/disk-usage.json
     deployment_path = get_buildout_path()
-    DiskUsageCalculator(deployment_path).calc_and_dump()
+    DiskUsageCalculator(
+        deployment_path, use_du_util=not args.python_du).calc_and_dump()
 
     zope_url = get_zope_url()
     plone_url = ''.join((zope_url, args.site_id))
