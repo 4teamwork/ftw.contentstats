@@ -33,6 +33,16 @@ def parse_args():
         help='Path to data directory for which to calculate disk usage.',
         default=None,
     )
+    parser.add_argument(
+        '--filestorage-path',
+        help='Path to Data.fs used for filestorage disk usage.',
+        default='var/filestorage/Data.fs',
+    )
+    parser.add_argument(
+        '--blobstorage-path',
+        help='Path to directory used for blobstorage disk usage.',
+        default='var/blobstorage',
+    )
 
     args = parser.parse_args()
     return args
@@ -69,6 +79,8 @@ def dump_stats_cmd():
         deployment_path,
         use_du_util=not args.python_du,
         data_path=args.data_path,
+        filestorage_path=options.filestorage_path,
+        blobstorage_path=options.blobstorage_path,
     ).calc_and_dump()
 
     zope_url = get_zope_url()

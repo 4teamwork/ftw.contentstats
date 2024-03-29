@@ -41,13 +41,10 @@ class DiskUsageProvider(object):
             log.warn('Unable to read disk usage stats from %r' % path)
             return {}
 
-        # XXX: The paths to filestorage and blobstorage could eventually be
-        # determined dynamically (ZODB APIs should be able to tell us).
-
         stats = {}
         stats['total'] = disk_usage['total']
-        stats['filestorage'] = disk_usage['subtrees']['var/filestorage/Data.fs']
-        stats['blobstorage'] = disk_usage['subtrees']['var/blobstorage']
+        stats['filestorage'] = disk_usage['filestorage']
+        stats['blobstorage'] = disk_usage['blobstorage']
         return stats
 
     def get_display_names(self):

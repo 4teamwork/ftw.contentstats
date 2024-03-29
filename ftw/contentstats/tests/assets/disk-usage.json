@@ -1,5 +1,7 @@
 {
+    "blobstorage": 45,
     "deployment": "/path/to/deployment",
+    "filestorage": 20,
     "updated": "2018-12-30T12:45:00",
     "subtrees": {
         "bin": 10,

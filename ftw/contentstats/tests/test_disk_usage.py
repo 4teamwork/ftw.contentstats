@@ -118,7 +118,9 @@ class TestDiskUsageCalculator(TestCase):
             du_stats = calculator.calc_du_stats()
 
         # Should reduce subtree depth to 2 levels, except for var/filestorage/*
-        self.assertEqual({'deployment': '/path/to/deployment',
+        self.assertEqual({'blobstorage': 45,
+                          'deployment': '/path/to/deployment',
+                          'filestorage': 20,
                           'updated': FROZEN_NOW.isoformat(),
                           'total': 1024,
                           'subtrees': {'bin': 10,

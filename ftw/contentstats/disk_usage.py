@@ -20,16 +20,24 @@ except ImportError:
     from os import walk
 
 
-
 class DiskUsageCalculator(object):
 
     du_stats_path = 'var/log/disk-usage.json'
 
-    def __init__(self, deployment_path, use_du_util=True, data_path=None):
+    def __init__(
+        self,
+        deployment_path,
+        use_du_util=True,
+        data_path=None,
+        filestorage_path='var/filestorage/Data.fs',
+        blobstorage_path='var/blobstorage',
+    ):
         self.deployment_path = deployment_path
         self.du_executable = None
         self.use_du_util = use_du_util
         self.data_path = data_path or deployment_path
+        self.filestorage_path = filestorage_path
+        self.blobstorage_path = blobstorage_path
 
         # This facilitates testing without actually running `du`
         self.du_outputs = {}
@@ -121,6 +129,8 @@ class DiskUsageCalculator(object):
         du_stats['updated'] = datetime.now().isoformat()
         du_stats['total'] = disk_usage_total
         du_stats['subtrees'] = disk_usage_subtrees
+        du_stats['filestorage'] = disk_usage_subtrees.get(self.filestorage_path, 0)
+        du_stats['blobstorage'] = disk_usage_subtrees.get(self.blobstorage_path, 0)
         return du_stats
 
     def calc_du_total(self):

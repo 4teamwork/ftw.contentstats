@@ -29,6 +29,16 @@ def dump_content_stats(app, args):
         help='Path to data directory for which to calculate disk usage.',
         default=None,
     )
+    parser.add_argument(
+        '--filestorage-path',
+        help='Path to Data.fs used for filestorage disk usage.',
+        default='var/filestorage/Data.fs',
+    )
+    parser.add_argument(
+        '--blobstorage-path',
+        help='Path to directory used for blobstorage disk usage.',
+        default='var/blobstorage',
+    )
 
     if sys.argv[0] != 'dump_content_stats':
         args = args[2:]
@@ -39,6 +49,8 @@ def dump_content_stats(app, args):
         deployment_path,
         use_du_util=not options.python_du,
         data_path=options.data_path,
+        filestorage_path=options.filestorage_path,
+        blobstorage_path=options.blobstorage_path,
     ).calc_and_dump()
 
     site = setup_site(app, options)
