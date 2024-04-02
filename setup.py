@@ -20,6 +20,7 @@ tests_require = [
 
 extras_require = {
     'tests': tests_require,
+    'scandir': ['scandir']
 }
 
 
@@ -75,6 +76,9 @@ setup(
     # -*- Entry points: -*-
     [z3c.autoinclude.plugin]
     target = plone
+
+    [zopectl.command]
+    dump_content_stats = ftw.contentstats.command:dump_content_stats
 
     [console_scripts]
     dump-content-stats = ftw.contentstats.console:dump_stats_cmd

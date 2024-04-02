@@ -14,13 +14,30 @@ import shlex
 import sys
 
 
+try:
+    from scandir import walk
+except ImportError:
+    from os import walk
+
+
 class DiskUsageCalculator(object):
 
     du_stats_path = 'var/log/disk-usage.json'
 
-    def __init__(self, deployment_path):
+    def __init__(
+        self,
+        deployment_path,
+        use_du_util=True,
+        data_path=None,
+        filestorage_path='var/filestorage/Data.fs',
+        blobstorage_path='var/blobstorage',
+    ):
         self.deployment_path = deployment_path
         self.du_executable = None
+        self.use_du_util = use_du_util
+        self.data_path = data_path or deployment_path
+        self.filestorage_path = filestorage_path
+        self.blobstorage_path = blobstorage_path
 
         # This facilitates testing without actually running `du`
         self.du_outputs = {}
@@ -32,13 +49,63 @@ class DiskUsageCalculator(object):
         @@dump-content-stats view (we don't want to run I/O heavy and potentially
         long running jobs like this from inside a Zope instance).
         """
-        self.du_executable = get_du_executable()
-        if self.du_executable is None:
-            print "No suitable `du` executable found, skipping disk usage"
-            return
+        if self.use_du_util:
+            self.du_executable = get_du_executable()
 
         du_stats = self.calc_du_stats()
         self.dump(du_stats)
+
+    def disk_usage(self, path='.', max_depth=3):
+        """Get disk usage for the given path.
+
+           Calculates totals for up to max_depth levels.
+           Return tuples of size counting all hardlinks, size counting hardlinks
+           only once, blocks counting all hardlinks and blocks counting hardlinks
+           only once. 
+        """
+        seen_inodes = set()
+        results = {}
+        for dirpath, dirnames, filenames in walk(path):
+            total_size = 0      # Size counting all hardlinks
+            total_size_h = 0    # Size counting hardlinks only once
+            total_blocks = 0    # Blocks counting all hardlinks
+            total_blocks_h = 0  # Blocks counting hardlinks only once
+            for filename in filenames:
+                fp = os.path.join(dirpath, filename)
+                stat_result = os.lstat(fp)
+                size = stat_result.st_size
+                size_h = 0
+                blocks = stat_result.st_blocks
+                blocks_h = 0
+                if stat_result.st_nlink > 1:
+                    if stat_result.st_ino not in seen_inodes:
+                        seen_inodes.add(stat_result.st_ino)
+                        size_h = size
+                        blocks_h = blocks
+                else:
+                    size_h = size
+                    blocks_h = blocks
+                total_size += size
+                total_size_h += size_h
+                total_blocks += blocks
+                total_blocks_h += blocks_h
+                rel_path = os.path.relpath(fp, start=path)
+                if len(rel_path.split(os.sep)) <= max_depth:
+                    results[rel_path] = (size, size_h, blocks, blocks_h)
+            rel_path = os.path.relpath(dirpath, start=path)
+            if rel_path != '.':
+                rel_path = os.path.join('.', rel_path)
+            sub_path = ''
+            for path_seg in rel_path.split(os.sep)[:max_depth + 1]:
+                sub_path = os.path.normpath(os.path.join(sub_path, path_seg))
+                s, sh, b, bh = results.setdefault(sub_path, (0, 0, 0, 0))
+                results[sub_path] = (
+                    s + total_size,
+                    sh + total_size_h,
+                    b + total_blocks,
+                    bh + total_blocks_h,
+                )
+        return results
 
     def calc_du_stats(self):
         """Determine disk usage (using `du`) for Data.fs and blobstorage.
@@ -46,17 +113,24 @@ class DiskUsageCalculator(object):
         Returns a dictionary with separate keys for total deployment size and
         individual subtrees.
         """
-        # Calculate an accurate total first
-        disk_usage_total = self.calc_du_total()
+        if self.du_executable is None and not self.du_outputs:
+            res = self.disk_usage(path=self.data_path)
+            disk_usage_total = res['.'][1]
+            disk_usage_subtrees = {k: v[0] for k, v in res.items()}
+        else:
+            # Calculate an accurate total first
+            disk_usage_total = self.calc_du_total()
 
-        # Calculate size of individual subdirectories / files
-        disk_usage_subtrees = self.calc_du_subtrees()
+            # Calculate size of individual subdirectories / files
+            disk_usage_subtrees = self.calc_du_subtrees()
 
         du_stats = {}
         du_stats['deployment'] = self.deployment_path
         du_stats['updated'] = datetime.now().isoformat()
         du_stats['total'] = disk_usage_total
         du_stats['subtrees'] = disk_usage_subtrees
+        du_stats['filestorage'] = disk_usage_subtrees.get(self.filestorage_path, 0)
+        du_stats['blobstorage'] = disk_usage_subtrees.get(self.blobstorage_path, 0)
         return du_stats
 
     def calc_du_total(self):
@@ -70,7 +144,7 @@ class DiskUsageCalculator(object):
         Returns the total size in bytes as an integer.
         """
         if 'total' not in self.du_outputs:
-            du_total_cmd = '%s -s -B1 %s' % (self.du_executable, self.deployment_path)
+            du_total_cmd = '%s -s -B1 %s' % (self.du_executable, self.data_path)
             self.du_outputs['total'] = self.run(du_total_cmd)
 
         disk_usage_total = self.parse_du_output(self.du_outputs['total'])
@@ -92,7 +166,7 @@ class DiskUsageCalculator(object):
         """
         if 'subtrees' not in self.du_outputs:
             du_subtrees_cmd = '%s -x -a -B1 --count-links --apparent-size --max-depth=3 %s' % (
-                self.du_executable, self.deployment_path)
+                self.du_executable, self.data_path)
             self.du_outputs['subtrees'] = self.run(du_subtrees_cmd)
 
         disk_usage_subtrees = self.parse_du_output(self.du_outputs['subtrees'])
@@ -119,8 +193,8 @@ class DiskUsageCalculator(object):
         for line in lines:
             size_in_bytes, path = map(str.strip, line.split())
             size_in_bytes = int(size_in_bytes)
-            assert path.startswith(self.deployment_path)
-            path = path.replace(self.deployment_path, '', 1).lstrip('/')
+            assert path.startswith(self.data_path)
+            path = path.replace(self.data_path, '', 1).lstrip('/')
             disk_usage[path] = size_in_bytes
 
         return disk_usage
@@ -150,9 +224,9 @@ def get_du_executable():
         if du_executable is None:
             print "WARNING: Unable to locate `gdu` executable."
             print
-            print "Disk usage stats will not be computed."
+            print "Disk usage stats will be computed using internal implementation."
             print
-            print "If you want to test disk usage stats on Mac OS, you need"
+            print "If you want to use the 'du' utility on Mac OS, you need"
             print "to install GNU coreutils to get the GNU-style du command"
             print "(installed as `gdu`):"
             print
