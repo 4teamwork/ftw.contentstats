@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.4.1 (unreleased)
+1.4.1 (2024-08-22)
 ------------------
 
 - Fix passing args to console command which was broken in 1.4.0. [buchi]
