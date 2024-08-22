@@ -79,8 +79,8 @@ def dump_stats_cmd():
         deployment_path,
         use_du_util=not args.python_du,
         data_path=args.data_path,
-        filestorage_path=options.filestorage_path,
-        blobstorage_path=options.blobstorage_path,
+        filestorage_path=args.filestorage_path,
+        blobstorage_path=args.blobstorage_path,
     ).calc_and_dump()
 
     zope_url = get_zope_url()
